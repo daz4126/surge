@@ -2,8 +2,6 @@
 
 Surge is a tiny microframework that makes it easy to add reactivity to your html by sprinkling it with data- attriutes.
 
-It was inspired by the excellent Stimulus library.
-
 # Example
 
 Add data-surge, data-action and data-reactive-value attributes to the relevant elements in the HTML:
@@ -27,3 +25,5 @@ surge({
 That's it!
 
 You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/YzMdbra).
+
+Surge was inspired by the excellent Stimulus library.

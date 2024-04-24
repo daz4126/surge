@@ -2,6 +2,8 @@
 
 Surge is a tiny microframework that makes it easy to add reactivity to your html by sprinkling it with data- attriutes.
 
+It has no dependencies and is so small (~0.5kb) you'll hardly know it's there!
+
 # Example
 
 Add data-surge, data-action and data-reactive-value attributes to the relevant elements in the HTML:

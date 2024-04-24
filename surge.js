@@ -1,7 +1,7 @@
 function surge(actions={}){
     const actionElements = [...document.querySelectorAll("[data-surge] [data-action]")]
     const elements = [...document.querySelectorAll("[data-surge] [id]")].reduce((obj,el) => {
-        if(el.dataset.value || el.dataset.reactiveValue){
+        if(el.dataset.value || el.dataset.value === "" || el.dataset.reactiveValue || el.dataset.reactiveValue === ""){
           Object.defineProperty(el, "value", {
               get: function() { 
               const val = this.dataset.value || this.dataset.reactiveValue

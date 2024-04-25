@@ -1,10 +1,10 @@
 function surge(actions={}){
     const actionElements = [...document.querySelectorAll("[data-surge] [data-action]")]
     const elements = [...document.querySelectorAll("[data-surge] [id]")].reduce((obj,el) => {
-    if(el.dataset.value !== undefined || el.dataset.reactiveValue !== undefined){
-        Object.defineProperty(el, "value", {
+        Object.entries(el.dataset).forEach(([key,value]) => {
+          Object.defineProperty(el, key, {
             get: function() { 
-            const val = this.dataset.value || this.dataset.reactiveValue
+            const val = this.dataset[key]
             try {
                     return JSON.parse(val)
                 } catch (e) {
@@ -13,22 +13,23 @@ function surge(actions={}){
             },
             set: function(value) {
             try {
-                    JSON.parse(this.dataset.value) || JSON.parse(this.dataset.reactiveValue)
-                    this.setAttribute(this.dataset.value !== undefined ? "data-value" : "data-reactive-value",JSON.stringify(value))
+                    JSON.parse(value)
+                    this.setAttribute("data-"+key,JSON.stringify(value))
                 } catch (e) {
-                    this.setAttribute(this.dataset.value !== undefined ? "data-value" : "data-reactive-value",value)
+                    this.setAttribute("data-"+key,value)
                 }
-            if(this.dataset.reactiveValue){
+            if(this.dataset.reactive !== undefined && key === "value"){
                 this.textContent = value
             }
         }
         })
-        if(el.dataset.reactiveValue){
+        if(el.dataset.reactive !== undefined){
             el.textContent = el.value
         }
-    }
+     })
         return {...obj,[el.id]: el}
     },{})
+        
     if(actions.connect){
         actions.connect(elements)
     }
@@ -43,4 +44,4 @@ function surge(actions={}){
         a.addEventListener(event,actions[action](elements))
     })
 }
-  export default surge
+export default surge

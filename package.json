@@ -1,6 +1,6 @@
 {
   "name": "@daz4126/surge",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Add a surge of reactivity to your JavaScript",
   "main": "surge.js",
   "scripts": {

@@ -30,7 +30,7 @@ That's it!
 
 You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 
-Surge was inspired by the excellent Stimulus library.
+Surge was inspired by the excellent [Stimulus](https://stimulus.hotwired.dev) library.
 
 ## Docs
 

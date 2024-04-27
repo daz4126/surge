@@ -20,7 +20,9 @@ It has no dependencies and is unbelievably small (~0.5kb)!
 </div>
 ```
 
-Then define the action that was referenced in the `data-action` attribute and pass it to the `surge` function in the JavaScript:
+* Define the action that was referenced in the `data-action` attribute
+* Use `$` to access any elements with an `id`
+* Pass it to the `surge` function in the JavaScript:
 
 ```javascript
 surge({

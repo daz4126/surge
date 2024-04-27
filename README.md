@@ -37,8 +37,10 @@ Surge was inspired by the excellent Stimulus library.
 HTML - add data attirbutes
 data-surge - goes in the container element that you want to add a surge or reactivity to
 data-action - acts like an event listener, specifies the action to run when the element is interacted with
-data-reactive-value - sets a value for an element that will update the textContent of that element when it changes in actions
+The magic `data-reactive-value` - sets a value for an element that will update the textContent of that element when it changes in actions
 data-* sets a value that is namespaced to the element it is defined in and can be accessed in actions
+The special $ symbol in actions
+Adding parameters
 
 ## Examples
 

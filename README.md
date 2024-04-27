@@ -35,7 +35,19 @@ You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 
 Surge was inspired by the excellent [Stimulus](https://stimulus.hotwired.dev) library.
 
-## Docs
+## Reference
+
+```html
+<div data-surge>
+  <button data-action="greet">Greet</button>
+  <div id="output" data-index=0 data-reactive-value="World"</div>
+</div>
+```
+
+In the example above: 
+* `$.output` would return a reference to the element `<div id="output" data-index=0 data-reactive-value="World"</div>`.
+* `$.output.index` would return a reference to the value of the `data-index` attribute with an value of `0` and read/write access in any actions.
+* `$.output.value` would retuturn a reference to the value of the `data-reactive-value` attribute with a value of `World`. The textContent of the element will automatically update whenever this value is changed in an any actions.
 
 HTML - add data attirbutes
 data-surge - goes in the container element that you want to add a surge or reactivity to
@@ -45,7 +57,7 @@ data-* sets a value that is namespaced to the element it is defined in and can b
 The special $ symbol in actions
 Adding parameters
 
-## Examples
+# Examples
 
 ### Likes Counter
 https://codepen.io/daz4126/pen/oNOVEme

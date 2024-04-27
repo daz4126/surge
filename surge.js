@@ -54,7 +54,7 @@ function surge(actions={}){
     
         
     if(actions.connect){
-        actions.connect(...elements,...actions)
+        actions.connect(elements)
     }
     actionElements.forEach(a => {
         const [event,action] = a.dataset.action.includes("->") ?
@@ -64,7 +64,7 @@ function surge(actions={}){
                 : a.tagName == "SELECT" ? "change"
                 : "click"
                 ,a.dataset.action]
-        a.addEventListener(event,actions[action](...elements,...actions))
+        a.addEventListener(event,actions[action](elements))
     })
 }
 export default surge

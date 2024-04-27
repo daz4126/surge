@@ -2,24 +2,25 @@
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
-Surge is a tiny microframework that makes it easy to add reactivity to your html by sprinkling it with data- attributes.
+Surge is a tiny microframework that adds sprinkles of reactivity to your html using `data` attributes. 
 
-It has no dependencies and is so small (~0.5kb) you'll hardly know it's there!
+It has no dependencies and is unbelievably small (~0.5kb)!
 
 # Hello World
 
-Add `data-surge`, `data-action` and `data-reactive-value` attributes to the relevant elements in the HTML:
+* Add a `data-surge` attribute to the container element that you want to add reactivity to
+* Add a `data-action` attribute to the element that performs the action
+* Add a `data-reactive-value` attribute to the element that will show the value that changes:
 
 ```html
 <div data-surge>
   <input id="name" type="text">
   <button data-action="greet">Greet</button>
-   <div>Hello <span id="output" data-reactive-value="World"></div>
-  </span>
+  <div>Hello <span id="output" data-reactive-value="World"></span></div>
 </div>
 ```
 
-Then define your actions in the JavaScript and pass them to the `surge` function:
+Then pass your actions to the `surge` function in the JavaScript:
 
 ```javascript
 surge({
@@ -44,13 +45,19 @@ Adding parameters
 
 ## Examples
 
-## Likes Counter
+### Likes Counter
+https://codepen.io/daz4126/pen/oNOVEme
 
 ### Character Counter
+https://codepen.io/daz4126/pen/XWQONvR
 
 ### BMI Calculator
 
+### Slideshow
+https://codepen.io/daz4126/pen/poBYMoP
+
 ### Stopwatch
+https://codepen.io/daz4126/pen/mdgoqOQ
 
 ### Times Table Quiz
 

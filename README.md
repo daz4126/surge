@@ -74,5 +74,7 @@ https://codepen.io/daz4126/pen/poBYMoP
 https://codepen.io/daz4126/pen/mdgoqOQ
 
 ### Times Table Quiz
+https://codepen.io/daz4126/pen/vYMPdPd
 
-### Fetching JSON
+### Fetching Data
+https://codepen.io/daz4126/pen/MWRRgLg

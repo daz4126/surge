@@ -66,6 +66,7 @@ https://codepen.io/daz4126/pen/oNOVEme
 https://codepen.io/daz4126/pen/XWQONvR
 
 ### BMI Calculator
+https://codepen.io/daz4126/pen/abxXwQR
 
 ### Slideshow
 https://codepen.io/daz4126/pen/poBYMoP

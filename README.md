@@ -10,7 +10,7 @@ It has no dependencies and is unbelievably small (~0.5kb)!
 
 * Add a `data-surge` attribute to the container element that you want to add reactivity to
 * Add a `data-action` attribute to the element that performs the action
-* Add a `data-reactive-value` attribute to the element that will show the value that changes:
+* Add a `data-reactive-value` attribute to the element that will show the value that changes
 
 ```html
 <div data-surge>
@@ -20,7 +20,7 @@ It has no dependencies and is unbelievably small (~0.5kb)!
 </div>
 ```
 
-Then pass your actions to the `surge` function in the JavaScript:
+Then define the action that was referenced in the `data-action` attribute and pass it to the `surge` function in the JavaScript:
 
 ```javascript
 surge({

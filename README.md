@@ -1,5 +1,5 @@
 <div align="center">
-  ![Screenshot 2024-04-24 at 20 46 41](https://github.com/daz4126/surge/assets/16646/125e908c-5bcc-4819-ac27-17cff98770ba)
+#  ![SURGE](https://github.com/daz4126/surge/assets/16646/125e908c-5bcc-4819-ac27-17cff98770ba)
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-ee119a)](#license)
 </div>

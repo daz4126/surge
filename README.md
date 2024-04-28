@@ -99,29 +99,39 @@ surge({
     increment: $ => e => $.count.value++
 })
 ```
+Surge actions look slightly strange at first, but they always have the same parameters - the *surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event listener, but the surge object has some extra methods that can be used to access and update the elements.
 
+The surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `h1` element).
 
-Inside here, we'll add an h1 element 
+Any element references also have access to any values set using `data` attributes. Any reactive values can be accessed using the `value` property. So in the example abvove `$.count.value` has an initial value of `0`. This value can then be updated just like any othe variable, so using the increment operator, `++`, will increase its value by 1. Because it was marked as a reactive-value, any changes will automatically update the HTML with the new value, so every time the button is pressed, the next number will be displayed.
+
+As well as `data-reactive-value`, other values can be set using the `data` attribute. These values will be name-spaced ot the element they are set on and can be accessed by the surge object (as long as they element they are set on is given an id).
+
+This is useful if you want to set a parameter for actions in the HTML. For example, let's add another button that increases the count by a value set in the HTML:
 
 ```html
 <div data-surge>
-  <button data-action="greet">Greet</button>
-  <div id="output" data-index=0 data-reactive-value="World"</div>
+  <button id="btn1" data-action="increment">Increase by 1</button>
+  <button id="btn2" data-action="increment" data-amount=2>Increase by 2</button>
+  <h1 id="count" data-reactive-value=0></h1>
 </div>
 ```
 
-In the example above: 
-* `$.output` would return a reference to the element `<div id="output" data-index=0 data-reactive-value="World"</div>`.
-* `$.output.index` would return a reference to the value of the `data-index` attribute with an value of `0` and read/write access in any actions.
-* `$.output.value` would retuturn a reference to the value of the `data-reactive-value` attribute with a value of `World`. The textContent of the element will automatically update whenever this value is changed in an any actions.
+Our new button has an id of "btn2" and a `data-amount` attribute set to 2. This is accessible in actions using `$.btn2.amount`. Notice that we don't need a different action, we just use the `increment` action again. We need to also add an id of "btn1" to our original button and then just need to update it to take account of the amount:
 
-HTML - add data attirbutes
-data-surge - goes in the container element that you want to add a surge or reactivity to
-data-action - acts like an event listener, specifies the action to run when the element is interacted with
-The magic `data-reactive-value` - sets a value for an element that will update the textContent of that element when it changes in actions
-data-* sets a value that is namespaced to the element it is defined in and can be accessed in actions
-The special $ symbol in actions
-Adding parameters
+```javascript
+surge({
+    increment: $ => e => $.count.value += $[e.target.id].amount || 1
+})
+```
+
+This uses the event object's `target` property to find the id of the element that was clicked on. We then use the surge object to access the `amount` value. If this isn't set, we default to a value of 1.
+
+This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
+
+There's also a special `initialize` action that will run after the HTML loads. This is useful for any setup you need to do.
+
+Have a look at the examples below to see how Surge can be used to create a variet of interactive HTML.
 
 # Examples
 

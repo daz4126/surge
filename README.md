@@ -205,7 +205,7 @@ surge({
 })
 ```
 
-[See the code on CodePen]](https://codepen.io/daz4126/pen/XWQONvR)
+[See the code on CodePen](https://codepen.io/daz4126/pen/XWQONvR)
 
 ### BMI Calculator
 
@@ -235,7 +235,7 @@ surge({
 })
 ```
 
-[See the code on CodePen]https://codepen.io/daz4126/pen/abxXwQR
+[See the code on CodePen](https://codepen.io/daz4126/pen/abxXwQR)
 
 ### Slideshow
 

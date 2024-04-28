@@ -6,7 +6,7 @@ Surge is a tiny microframework that adds sprinkles of reactivity to your html us
 
 It has no dependencies and is unbelievably small (~0.5kb)!
 
-# Hello World
+# Quick Start - Hello World
 
 * Add a `data-surge` attribute to the container element that you want to add reactivity to
 * Add a `data-action` attribute to the element that performs the action
@@ -30,6 +30,8 @@ surge({
 })
 ```
 That's it!
+
+![Screenshot 2024-04-28 at 14 47 23](https://github.com/daz4126/surge/assets/16646/f39bfda4-fee3-4038-a5b2-772934c6d63b)
 
 You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 
@@ -134,22 +136,262 @@ Have a look at the examples below to see how Surge can be used to create a varie
 # Examples
 
 ### Likes Counter
-https://codepen.io/daz4126/pen/oNOVEme
+
+![Screenshot 2024-04-28 at 14 48 59](https://github.com/daz4126/surge/assets/16646/f71be43e-2ff2-4fff-92b9-b0ee708f715b)
+
+#### HTML:
+```html
+<main data-surge>
+  <h1>❤️ <span id="count" data-reactive-value=0></span></h1>
+  <button data-action="increment">👍</button>
+  <button data-action="decrement">👎</button>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  increment: $ => e => $.count.value++,
+  decrement: $ => e => $.count.value--
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/oNOVEme)
 
 ### Character Counter
-https://codepen.io/daz4126/pen/XWQONvR
+
+![Screenshot 2024-04-28 at 14 58 18](https://github.com/daz4126/surge/assets/16646/d823896d-a60f-486a-a689-5df7eac3137a)
+
+#### HTML:
+```html
+<main data-surge>
+  <textarea data-action="count"></textarea>
+  <p>
+    There are
+    <strong id="count" data-reactive-value=0></strong> characters in this textarea.
+  </p>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  count: $ => e => {
+    console.log($.count)
+    $.count.value = e.target.value.length
+  }
+})
+```
+
+[See the code on CodePen]](https://codepen.io/daz4126/pen/XWQONvR)
 
 ### BMI Calculator
-https://codepen.io/daz4126/pen/abxXwQR
+
+![Screenshot 2024-04-28 at 15 00 06](https://github.com/daz4126/surge/assets/16646/98018fa8-a44c-4feb-8703-01b74ff71489)
+
+#### HTML:
+```html
+<main data-surge>
+  <h2>BMI Calculator</h2>
+  <h2>BMI: <span id="bmi" data-reactive-value=48></span></h2>
+  <label>Weight:</label>
+  <input type="range" min=0 max=150 data-action="update" data-target="weight" value=45>
+  <h2 id="weight" data-reactive-value=75></h2>
+  <label>Height:</label>
+  <input type="range" min=0 max=250 data-action="update" data-target="height" value=150>
+  <h2 id="height" data-reactive-value=125></h2>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  update: $ => e => {
+    $[e.target.dataset.target].value = e.target.value
+    $.bmi.value = ($.weight.value / ($.height.value/100)**2).toFixed(1)
+  }
+})
+```
+
+[See the code on CodePen]https://codepen.io/daz4126/pen/abxXwQR
 
 ### Slideshow
-https://codepen.io/daz4126/pen/poBYMoP
+
+![Screenshot 2024-04-28 at 14 52 42](https://github.com/daz4126/surge/assets/16646/f7fdd28e-0232-487f-9439-28ddb873fd63)
+
+
+#### HTML:
+```html
+<main data-surge>
+  <button data-action="previous"> ← </button>
+  <button data-action="next"> → </button>
+  <div id="slides" data-index=0>
+    <div hidden>🐵</div>
+    <div hidden>🙈</div>
+    <div hidden>🙉</div>
+    <div hidden>🙊</div>
+  </div>
+</main>
+```
+
+#### JavaScript:
+```javascript
+const showCurrentSlide = (slides,i) =>  [...slides].forEach((element, j) => {
+   element.hidden = j !== i
+})
+
+surge({
+  connect: $ => {
+    showCurrentSlide($.slides.children,$.slides.index)
+  },
+  next: $ => e => {
+    $.slides.index = ($.slides.index + 1)%4
+    showCurrentSlide($.slides.children,$.slides.index)
+  },
+  previous: $ => e => {
+    $.slides.index = (($.slides.index - 1)%4+4)%4
+    showCurrentSlide($.slides.children,$.slides.index)
+  }
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/poBYMoP)
 
 ### Stopwatch
-https://codepen.io/daz4126/pen/mdgoqOQ
+
+![Screenshot 2024-04-28 at 14 54 10](https://github.com/daz4126/surge/assets/16646/0c4cca8f-cfa4-49ca-bd7a-5730ace9e8ec)
+
+
+#### HTML:
+```html
+<main data-surge>
+  <h1 id="time" data-reactive-value=0></h1>
+  <button id="toggleBtn" data-reactive-value="Start" data-action="toggle"></button>
+  <button data-action="reset">Reset</button>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  connect: $ => {
+    $.time.value = (0).toFixed(2)
+  },
+  toggle: $ => e => {
+    $.toggleBtn.value = $.ticking ? "Start" : "Stop"
+    if($.ticking){
+      $.ticking = clearInterval($.ticking)
+    } else {
+        $.ticking = setInterval(() => {
+          $.time.value = (Number($.time.value) + 0.1).toFixed(2)
+    },10)
+    }
+  },
+  reset: $ => e =>{
+    $.time.value = (0).toFixed(2)
+  }
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/mdgoqOQ)
 
 ### Times Table Quiz
-https://codepen.io/daz4126/pen/vYMPdPd
+
+![Screenshot 2024-04-28 at 14 55 37](https://github.com/daz4126/surge/assets/16646/4608975f-2e3c-4d46-8f8b-70a4d18960f1)
+
+
+#### HTML:
+```html
+<main data-surge>
+  <div id="game">
+  <h2>Times Tables</h2>
+  <h2>Score: <span id="score" data-reactive-value=0></span></h2>
+  <h1><span id="question" data-reactive-value=1></span>) <span id="x" data-reactive-value></span> &times; <span id="y" data-reactive-value></span> = <span id="answer"></span><span id="feedback" data-reactive-value></span></h1>
+  <form data-action="check">
+    <input id="userAnswer" />
+  </form>
+  </div>
+  <div id="info" hidden=true>
+  <h2 id="message" data-reactive-value></h2>
+    <button data-action="newGame">Play Again</button>
+  </div>
+</main>
+```
+
+#### JavaScript:
+```javascript
+const NUMBER_OF_QUESTIONS = 5
+
+const randomNumber = n => Math.ceil(Math.random()*n)
+const generateQuestion = (x,y) => {
+  x.value = randomNumber(12)
+  y.value = randomNumber(12)
+}
+
+surge({
+  connect: $ => {
+    generateQuestion($.x,$.y)
+  },
+  check: $ => e => {
+    e.preventDefault()
+    $.answer.textContent = $.userAnswer.value
+    if($.userAnswer.value == $.x.value * $.y.value){
+      $.score.value ++
+      $.feedback.value = "✅"
+    } else {
+      $.feedback.value = "❌"
+    }
+    setTimeout(() => {
+      if($.question.value === NUMBER_OF_QUESTIONS){
+        $.message.value = `Game Over. You Scored ${$.score.value}`
+        $.game.hidden = true
+        $.info.hidden = false
+      } else {
+        $.question.value ++
+        generateQuestion($.x,$.y)
+        $.userAnswer.value = ""
+        $.answer.textContent = ""
+        $.feedback.value = ""
+    }
+    },700)
+  },
+  newGame: $ => e => {
+    generateQuestion($.x,$.y)
+    $.question.value = 1
+    $.score.value = 0
+    $.game.hidden = false
+    $.info.hidden = true
+    $.answer.textContent = ""
+    $.userAnswer.value = ""
+    $.feedback.value = ""
+  },
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/vYMPdPd)
 
 ### Fetching Data
-https://codepen.io/daz4126/pen/MWRRgLg
+#### HTML:
+```html
+<main data-surge>
+  <div id="photos" data-url="https://picsum.photos/v2/list" class="grid"></div>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  connect: $ => {
+    fetch($.photos.url)
+      .then(response => response.ok ? response.json() 
+                        : new Error(response.status))
+      .then(data => $.photos.innerHTML = 
+            data.map(photo => 
+              `<img src=${`https://picsum.photos/id/${photo.id}/200`}>`
+            ).join``)
+      .catch(error => console.log(error))
+  }
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/MWRRgLg)

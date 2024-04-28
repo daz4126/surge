@@ -94,7 +94,7 @@ Next we need to add a `data-action` attribute to the button. This tells Surge wh
 
 This means that when the button is clicked the action called `increment` will be called.
 
-Buttons have a default even of 'click', so we can omit that and just write the name of the action:
+Buttons have a default event of 'click', so we can omit that and just write the name of the action:
 
 ```html
 <div data-surge>
@@ -151,7 +151,7 @@ This uses the event object's `target` property to find the id of the element tha
 
 This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
-There's also a special `initialize` action that will run after the HTML loads. This is useful for any setup you need to do.
+There's also a special `connect` action that will run after the HTML loads and the surge function connects to it. This is useful for any setup code that needs running.
 
 Have a look at the examples below to see how Surge can be used to create a variet of interactive HTML.
 

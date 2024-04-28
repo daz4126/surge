@@ -31,7 +31,7 @@ surge({
 ```
 That's it!
 
-![Screenshot 2024-04-28 at 14 47 23](https://github.com/daz4126/surge/assets/16646/f39bfda4-fee3-4038-a5b2-772934c6d63b)
+![Screenshot 2024-04-28 at 15 02 33](https://github.com/daz4126/surge/assets/16646/b3670a9b-9df4-49ce-894a-03a0f16bd8a3)
 
 You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 

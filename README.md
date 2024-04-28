@@ -1,6 +1,8 @@
 #  ![SURGE](https://github.com/daz4126/surge/assets/16646/393306bf-9f11-4021-82ee-91e160629cf2)
+<div align="center">
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
+</div>
 
 Surge is a tiny microframework that adds sprinkles of reactivity to your html using `data` attributes. 
 
@@ -14,9 +16,9 @@ It has no dependencies and is unbelievably small (~0.5kb)!
 
 ```html
 <div data-surge>
-  <input id="name" type="text">
+  <input id="name" type="text" placeholder="Enter your name">
   <button data-action="greet">Greet</button>
-  <div>Hello <span id="output" data-reactive-value="World"></span></div>
+  <h1>Hello <span id="output" data-reactive-value="World"></span></h1>
 </div>
 ```
 
@@ -36,6 +38,70 @@ You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 Surge was inspired by the excellent [Stimulus](https://stimulus.hotwired.dev) library.
 
 ## Reference
+
+Surge works by adding `data` attributes to your HTML.
+
+Let's look at a simple example to illustrate how it works.
+
+We'll make a little counter app that increases the count when a button is pressed.
+
+```html
+<div>
+  <button>Increase Count</button>
+  <h1></h1>
+</div>
+```
+
+First, we need to add a `data-surge` attribute to the contianer element to identify that we're using Surge:
+
+```html
+<div data-surge>
+  <button>Increase Count</button>
+  <h1></h1>
+</div>
+```
+
+Next we need to add a `data-action` attribute to the button. This tells Surge what action to run when the button is pressed. These take the form of `data-action="event->actionName"`:
+
+```html
+<div data-surge>
+  <button data-action="click->increment">Increase Count</button>
+  <h1></h1>
+</div>
+```
+
+This means that when the button is clicked the action called `increment` will be called.
+
+Buttons have a default even of 'click', so we can omit that and just write the name of the action:
+
+```html
+<div data-surge>
+  <button data-action="increment">Increase Count</button>
+  <h1></h1>
+</div>
+```
+
+Next we need to associate the value of the count with the `h1` element. To do this we give it an id of "count". Surge uses this to identify the element. We also use the `data-reactive-value` attribute to assign an initial value of `0`:
+
+```html
+<div data-surge>
+  <button data-action="increment">Increase Count</button>
+  <h1 id="count" data-reactive-value=0></h1>
+</div>
+```
+
+This will mean that the textContent of the `h1` element starts with a value of `0`. It also means that whenever the value of the count changes, the textContent will automatically update and re-render.
+
+Now we just need to define our `increment` action in the JavaScript. Actions are passed to the `surge` function as an object:
+
+```javascript
+surge({
+    increment: $ => e => $.count.value++
+})
+```
+
+
+Inside here, we'll add an h1 element 
 
 ```html
 <div data-surge>

@@ -1,8 +1,6 @@
 #  ![SURGE](https://github.com/daz4126/surge/assets/16646/393306bf-9f11-4021-82ee-91e160629cf2)
-<div align="center">
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
-</div>
 
 Surge is a tiny microframework that adds sprinkles of reactivity to your html using `data` attributes. 
 

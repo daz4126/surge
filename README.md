@@ -37,7 +37,29 @@ You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 
 Surge was inspired by the excellent [Stimulus](https://stimulus.hotwired.dev) library.
 
-## Reference
+# Reference
+
+## Installation
+
+Either use npm or yarn to install:
+
+```
+npm install @daz4126/surge
+```
+
+Then import the `surge` function in your JavaScript file:
+
+```
+import surge from "@daz4126/surge"
+```
+
+Alternatively you can just import from a CDN:
+
+```
+import surge from "https://esm.sh/@daz4126/surge"
+```
+
+## Usage
 
 Surge works by adding `data` attributes to your HTML.
 
@@ -371,6 +393,9 @@ surge({
 [See the code on CodePen](https://codepen.io/daz4126/pen/vYMPdPd)
 
 ### Fetching Data
+
+![Screenshot 2024-04-28 at 15 04 23](https://github.com/daz4126/surge/assets/16646/040396c5-1c70-4268-b134-87f54976d73a)
+
 #### HTML:
 ```html
 <main data-surge>

@@ -248,7 +248,7 @@ surge({
   <button data-action="previous"> ← </button>
   <button data-action="next"> → </button>
   <div id="slides" data-index=0>
-    <div hidden>🐵</div>
+    <div>🐵</div>
     <div hidden>🙈</div>
     <div hidden>🙉</div>
     <div hidden>🙊</div>
@@ -258,14 +258,9 @@ surge({
 
 #### JavaScript:
 ```javascript
-const showCurrentSlide = (slides,i) =>  [...slides].forEach((element, j) => {
-   element.hidden = j !== i
-})
+const showCurrentSlide = (slides,i) =>  [...slides].forEach((element, j) => element.hidden = j !== i)
 
 surge({
-  connect: $ => {
-    showCurrentSlide($.slides.children,$.slides.index)
-  },
   next: $ => e => {
     $.slides.index = ($.slides.index + 1)%4
     showCurrentSlide($.slides.children,$.slides.index)

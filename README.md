@@ -282,8 +282,8 @@ surge({
 #### HTML:
 ```html
 <main data-surge>
-  <h1 id="time" data-reactive-value=0></h1>
-  <button id="toggleBtn" data-reactive-value="Start" data-action="toggle"></button>
+  <h1 id="time" data-reactive-value="0.00">0:00</h1>
+  <button id="toggleBtn" data-reactive-value="Start" data-action="toggle">Start</button>
   <button data-action="reset">Reset</button>
 </main>
 ```
@@ -291,16 +291,13 @@ surge({
 #### JavaScript:
 ```javascript
 surge({
-  connect: $ => {
-    $.time.value = (0).toFixed(2)
-  },
   toggle: $ => e => {
     $.toggleBtn.value = $.ticking ? "Start" : "Stop"
     if($.ticking){
       $.ticking = clearInterval($.ticking)
     } else {
         $.ticking = setInterval(() => {
-          $.time.value = (Number($.time.value) + 0.1).toFixed(2)
+          $.time.value = (Number($.time.value) + 0.01).toFixed(2)
     },10)
     }
   },

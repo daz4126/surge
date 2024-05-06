@@ -2,7 +2,7 @@
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
-Surge is a tiny microframework that adds sprinkles of reactivity to your html using `data` attributes. 
+Surge is a tiny microframework that adds reactivity to your HTML using `data` attributes. 
 
 It has no dependencies and is unbelievably small (~0.5kb)!
 

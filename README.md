@@ -74,7 +74,7 @@ We'll make a little counter app that increases the count when a button is presse
 </div>
 ```
 
-First, we need to add a `data-surge` attribute to the contianer element to identify that we're using Surge:
+First, we need to add a `data-surge` attribute to the container element to identify that we're using Surge:
 
 ```html
 <div data-surge>
@@ -114,14 +114,14 @@ Next we need to associate the value of the count with the `h1` element. To do th
 
 This will mean that the textContent of the `h1` element starts with a value of `0`. It also means that whenever the value of the count changes, the textContent will automatically update and re-render.
 
-Now we just need to define our `increment` action in the JavaScript. Actions are passed to the `surge` function as an object:
+Now we just need to define our `increment` action in the JavaScript. Actions are basically event handlers and are passed to the `surge` function as an object:
 
 ```javascript
 surge({
     increment: $ => e => $.count.value++
 })
 ```
-Surge actions look slightly strange at first, but they always have the same parameters - the *surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event listener, but the surge object has some extra methods that can be used to access and update the elements.
+Surge actions look slightly strange at first, but they always have the same parameters - the *surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event handler, but the surge object has some extra methods that can be used to access and update the elements.
 
 The surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `h1` element).
 

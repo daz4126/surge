@@ -16,6 +16,7 @@ function surge(actions={}){
      Object.entries(el.dataset).forEach(([key,value]) => {
       if(key !== "action" && key !== "reactiveValue"){
         Object.defineProperty(el, key, {
+              configurable: true,
               get: function() { 
                 const val = el.dataset[key]
                 try {

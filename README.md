@@ -151,9 +151,28 @@ This uses the event object's `target` property to find the id of the element tha
 
 This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
-There's also a special `connect` action that will run after the HTML loads and the surge function connects to it. This is useful for any setup code that needs running.
+### The `connect` action
 
-Have a look at the examples below to see how Surge can be used to create a variet of interactive HTML.
+The `connect` action will run once after the HTML loads and the surge function connects to it. This is useful for any setup code that needs running.
+
+### The `add` method
+
+Every element that can be accessed using the surge object has an `add` method that can be used to append HTML to it. For example the following code would append a list item to a list:
+
+```html
+<main data-surge>
+  <button data-action="add">Add new item</button>
+  <ul id="list"></ul>
+</main>
+```
+
+```javascript
+surge({
+  add: $ => e => $.list.add("<li>Another item</li>")
+})
+```
+
+Have a look at the examples below to see how Surge can be used to create a variety of interactive HTML.
 
 # Examples
 
@@ -402,11 +421,10 @@ surge({
     fetch($.photos.url)
       .then(response => response.ok ? response.json() 
                         : new Error(response.status))
-      .then(data => $.photos.innerHTML = 
-            data.map(photo => 
-              `<img src=${`https://picsum.photos/id/${photo.id}/200`}>`
-            ).join``)
-      .catch(error => console.log(error))
+      .then(data => {
+        data.forEach(photo => $.photos.add(`<img src="${`https://picsum.photos/id/${photo.id}/200`}"/>`))       
+      })
+      .catch(error => console.log(error.message))
   }
 })
 ```

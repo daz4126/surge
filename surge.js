@@ -4,10 +4,13 @@ function surge(actions={}){
   // any elements that have an id inside the data-surge container  
   const elements = [...document.querySelectorAll("[data-surge] [id]")].reduce((obj,el) => {
     // add methods for elements to append html 
-    el.add = html => {
+    el.add = (html,position="append") => {
+      if(position === "replace"){
+         position = "replaceWith"
+       }
        const template = document.createElement("template")
        template.innerHTML = html
-       Object.values(template.content.children).forEach(child => el.appendChild(child))
+       Object.values(template.content.children).forEach(child => el[position](child))
        const {connect,...rest} = actions
        // run surge again to pick up any new data attributes
        surge(rest)

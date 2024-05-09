@@ -1,23 +1,36 @@
 function surge(actions={}){
-  // any elements that have a data-action attribute
-  const actionElements = [...document.querySelectorAll("[data-surge] [data-action]")]  
+  // The surge object
+  const $ = {}
   // any elements that have an id inside the data-surge container  
-  const elements = [...document.querySelectorAll("[data-surge] [id]")].reduce((obj,el) => {
-    // add methods for elements to append html 
-    el.add = (html,position="append") => {
-      if(position === "replace"){
-         position = "replaceWith"
+  Array.from(document.querySelectorAll("[data-surge] [id]")).forEach(el => {
+    addToSurge(el)
+  })
+  // create event listeners based on data-action attributes
+  Array.from(document.querySelectorAll("[data-surge] [data-action]")).forEach(element => addAction(element))
+  // run the connect action if it exists
+  if(actions.connect){
+      actions.connect($)
+  }
+  // Surgify an element to be a prop of the Surge object                    
+  function addToSurge(el){
+    // Make these DOM methods pick up on any data-attributes attached to dynamically added content
+      ["append","prepend","before","after","replace"].forEach(position => {
+       const fn = position === "replace" ? el.replaceWith : el[position]
+       el[position] = html => {
+        const template = document.createElement("template") 
+        template.innerHTML = typeof html === "object" ? html.outerHTML : html
+        Object.values(template.content.children).forEach(child => {
+         fn.call(el,child)
+         if(child.id) addToSurge(child)
+         if(child.dataset.action) addAction(child)
+         Array.from(child.querySelectorAll("[id]")).forEach(el => addToSurge(el))
+         Array.from(child.querySelectorAll("[data-action]")).forEach(el => addAction(el))
+       })
        }
-       const template = document.createElement("template")
-       template.innerHTML = html
-       Object.values(template.content.children).forEach(child => el[position](child))
-       const {connect,...rest} = actions
-       // run surge again to pick up any new data attributes
-       surge(rest)
-     }
+     })
      // allow values to be get and set on elements
      Object.entries(el.dataset).forEach(([key,value]) => {
-      if(key !== "action" && key !== "reactiveValue"){
+      if(key !== "action" && key !== "reactive" && key !== "target"){
         Object.defineProperty(el, key, {
               configurable: true,
               get: function() { 
@@ -39,54 +52,37 @@ function surge(actions={}){
         }) // end Object.defineProperty
       } // end if
     }) // end Object.entries.forEach
-    // create a reactive value if it has been set with data-reactive-value
-      if(el.dataset.reactiveValue !== undefined) {
+    // create a reactive value if it has data-reactive
+      if(el.dataset.reactive !== undefined) {
         // set reactive value text content
-        el.textContent = el.dataset.reactiveValue
         Object.defineProperty(el, "value", {
-          get: function() { 
-          const val = this.dataset.reactiveValue
-          try {
+          get: function() {
+             const val = this.dataset.target ? document.getElementById(this.dataset.target).textContent : this.textContent
+                try {
                   return JSON.parse(val)
-              } catch (e) {
+                } catch (e) {
                   return val
-              }
+                }
           },
           set: function(value) {
-          try {
-                  JSON.parse(value)
-                  this.setAttribute("data-reactive-value",JSON.stringify(value))
-              } catch (e) {
-                  this.setAttribute("data-reactive-value",value)
-              }
-              this.textContent = value
+              this.dataset.target ? document.getElementById(this.dataset.target).textContent = value :this.textContent = value
           }
       }) // end objectDefineProperty
-    } // end if
-      
+    } // end if 
     // add id references to the surge object
-    return {...obj,[el.id]: el}
-  },{}) // end of reduce
-  
-  // run the connect action if it exists
-  if(actions.connect){
-      actions.connect(elements)
+    $[el.id] = el
   }
-
-  // create event listeners based on data-action attributes
-  actionElements.forEach(a => {
-      const [event,action] = a.dataset.action.includes("->") ?
-          [a.dataset.action.split("->")[0],a.dataset.action.split("->")[1]]
+  // Add any event listeners based on the data-action attributes
+  function addAction(element){
+    const [event,action] = element.dataset.action.includes("->") ?
+          [element.dataset.action.split("->")[0],a.dataset.action.split("->")[1]]
           // default events for certain elements
-          : [a.tagName === "FORM" ? "submit" 
-              : a.tagName === "INPUT" && a.type !== "submit" || a.tagName === "TEXTAREA" ? "input"
-              : a.tagName == "SELECT" ? "change"
+          : [element.tagName === "FORM" ? "submit" 
+              : element.tagName === "INPUT" && element.type !== "submit" || element.tagName === "TEXTAREA" ? "input"
+              : element.tagName == "SELECT" ? "change"
               : "click"
-              ,a.dataset.action]
-      if(!a.event){ // check if the event already exists
-        a.addEventListener(event,actions[action](elements))
-        a.event = actions[action] // add the event as a property of the element
-      }
-  })
+              ,element.dataset.action]
+        element.addEventListener(event,actions[action]($))
+  }
 }
 export default surge

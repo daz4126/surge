@@ -16,7 +16,7 @@ It has no dependencies and is unbelievably small (~0.5kb)!
 <div data-surge>
   <input id="name" type="text" placeholder="Enter your name">
   <button data-action="greet">Greet</button>
-  <h1>Hello <span id="output" data-reactive-value="World"></span></h1>
+  <h1>Hello <span id="output" data-reactive>World</span></h1>
 </div>
 ```
 
@@ -103,12 +103,12 @@ Buttons have a default event of 'click', so we can omit that and just write the 
 </div>
 ```
 
-Next we need to associate the value of the count with the `h1` element. To do this we give it an id of "count". Surge uses this to identify the element. We also use the `data-reactive-value` attribute to assign an initial value of `0`:
+Next we need to associate the value of the count with the `h1` element. To do this we give it an id of "count". Surge uses this to identify the element. We also use the `data-reactive` say that this element will be reactive and it's value will change dynamically. We assign an initial value of `0` by setting the text content to `0`:
 
 ```html
 <div data-surge>
   <button data-action="increment">Increase Count</button>
-  <h1 id="count" data-reactive-value=0></h1>
+  <h1 id="count" data-reactive>0</h1>
 </div>
 ```
 
@@ -121,13 +121,13 @@ surge({
     increment: $ => e => $.count.value++
 })
 ```
-Surge actions look slightly strange at first, but they always have the same parameters - the *surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event handler, but the surge object has some extra methods that can be used to access and update the elements.
+Surge actions look slightly strange at first, but they always have the same parameters - the *surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event handler, but the surge object has some extra methods that can be used to access and update the elements that have been marked with an id attribute.
 
 The surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `h1` element).
 
 Any element references also have access to any values set using `data` attributes. Any reactive values can be accessed using the `value` property. So in the example abvove `$.count.value` has an initial value of `0`. This value can then be updated just like any othe variable, so using the increment operator, `++`, will increase its value by 1. Because it was marked as a reactive-value, any changes will automatically update the HTML with the new value, so every time the button is pressed, the next number will be displayed.
 
-As well as `data-reactive-value`, other values can be set using the `data` attribute. These values will be name-spaced ot the element they are set on and can be accessed by the surge object (as long as they element they are set on is given an id).
+As well as `data-reactive`, other values can be set using the `data` attribute. These values will be name-spaced to the element they are set on and can be accessed by the surge object (as long as they element they are set on is given an id).
 
 This is useful if you want to set a parameter for actions in the HTML. For example, let's add another button that increases the count by a value set in the HTML:
 
@@ -155,22 +155,24 @@ This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
 The `connect` action will run once after the HTML loads and the surge function connects to it. This is useful for any setup code that needs running.
 
-### The `add` method
+### The `append` method
 
-Every element that can be accessed using the surge object has an `add` method that can be used to append HTML to it. For example the following code would append a list item to a list:
+Every element that can be accessed using the surge object has an `append` method that can be used to append HTML to it. For example the following code would append a list item to a list:
 
 ```html
 <main data-surge>
   <button data-action="add">Add new item</button>
-  <ul id="list"></ul>
+  <ul id="list" data-size=1></ul>
 </main>
 ```
 
 ```javascript
 surge({
-  add: $ => e => $.list.add("<li>Another item</li>")
+  add: $ => e => $.list.append(`<li>Item number ${$.list.size++}</li>`)
 })
 ```
+
+You can add `data-reactive` and `data-action` attributes to dynamically created HTML to create fully interactive web pages.
 
 Have a look at the examples below to see how Surge can be used to create a variety of interactive HTML.
 
@@ -183,7 +185,7 @@ Have a look at the examples below to see how Surge can be used to create a varie
 #### HTML:
 ```html
 <main data-surge>
-  <h1>❤️ <span id="count" data-reactive-value=0></span></h1>
+  <h1>❤️ <span id="count" data-reactive>0</span></h1>
   <button data-action="increment">👍</button>
   <button data-action="decrement">👎</button>
 </main>
@@ -209,7 +211,7 @@ surge({
   <textarea data-action="count"></textarea>
   <p>
     There are
-    <strong id="count" data-reactive-value=0></strong> characters in this textarea.
+    <strong id="count" data-reactive>0</strong> characters in this textarea.
   </p>
 </main>
 ```
@@ -217,10 +219,7 @@ surge({
 #### JavaScript:
 ```javascript
 surge({
-  count: $ => e => {
-    console.log($.count)
-    $.count.value = e.target.value.length
-  }
+  count: $ => e => $.count.value = e.target.value.length
 })
 ```
 
@@ -234,13 +233,13 @@ surge({
 ```html
 <main data-surge>
   <h2>BMI Calculator</h2>
-  <h2>BMI: <span id="bmi" data-reactive-value=48></span></h2>
-  <label>Weight:</label>
+  <h2>BMI: <span id="bmi" data-reactive></span></h2>
+  <label>Weight (kg):</label>
   <input type="range" min=0 max=150 data-action="update" data-target="weight" value=45>
-  <h2 id="weight" data-reactive-value=75></h2>
-  <label>Height:</label>
+  <h2 id="weight" data-reactive>75</h2>
+  <label>Height (cm):</label>
   <input type="range" min=0 max=250 data-action="update" data-target="height" value=150>
-  <h2 id="height" data-reactive-value=125></h2>
+  <h2 id="height" data-reactive>25</h2>
 </main>
 ```
 
@@ -301,7 +300,7 @@ surge({
 #### HTML:
 ```html
 <main data-surge>
-  <h1 id="time" data-reactive-value="0.00">0:00</h1>
+  <h1 id="time" data-reactive>0.00</h1>
   <button id="toggleBtn" data-reactive-value="Start" data-action="toggle">Start</button>
   <button data-action="reset">Reset</button>
 </main>
@@ -338,14 +337,14 @@ surge({
 <main data-surge>
   <div id="game">
   <h2>Times Tables</h2>
-  <h2>Score: <span id="score" data-reactive-value=0></span></h2>
-  <h1><span id="question" data-reactive-value=1></span>) <span id="x" data-reactive-value></span> &times; <span id="y" data-reactive-value></span> = <span id="answer"></span><span id="feedback" data-reactive-value></span></h1>
+  <h2>Score: <span id="score" data-reactive>0</span></h2>
+  <h1><span id="question" data-reactive>1</span>) <span id="x" data-reactive></span> &times; <span id="y" data-reactive></span> = <span id="answer" data-reactive></span><span id="feedback" data-reactive></span></h1>
   <form data-action="check">
     <input id="userAnswer" />
   </form>
   </div>
   <div id="info" hidden=true>
-  <h2 id="message" data-reactive-value></h2>
+  <h2 id="message" data-reactive></h2>
     <button data-action="newGame">Play Again</button>
   </div>
 </main>
@@ -367,7 +366,7 @@ surge({
   },
   check: $ => e => {
     e.preventDefault()
-    $.answer.textContent = $.userAnswer.value
+    $.answer.value = $.userAnswer.value
     if($.userAnswer.value == $.x.value * $.y.value){
       $.score.value ++
       $.feedback.value = "✅"
@@ -383,7 +382,7 @@ surge({
         $.question.value ++
         generateQuestion($.x,$.y)
         $.userAnswer.value = ""
-        $.answer.textContent = ""
+        $.answer.value = ""
         $.feedback.value = ""
     }
     },700)
@@ -410,7 +409,7 @@ surge({
 #### HTML:
 ```html
 <main data-surge>
-  <div id="photos" data-url="https://picsum.photos/v2/list" class="grid"></div>
+  <div id="photos" data-url="https://picsum.photos/v2/list"></div>
 </main>
 ```
 
@@ -422,7 +421,7 @@ surge({
       .then(response => response.ok ? response.json() 
                         : new Error(response.status))
       .then(data => {
-        data.forEach(photo => $.photos.add(`<img src="${`https://picsum.photos/id/${photo.id}/200`}"/>`))       
+        data.forEach(photo => $.photos.append(`<img src="${`https://picsum.photos/id/${photo.id}/200`}"/>`))       
       })
       .catch(error => console.log(error.message))
   }

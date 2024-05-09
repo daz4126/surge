@@ -57,7 +57,7 @@ function surge(actions={}){
         // set reactive value text content
         Object.defineProperty(el, "value", {
           get: function() {
-             const val = this.dataset.target ? document.getElementById(this.dataset.target).textContent : this.textContent
+             const val = this.dataset.target ? document.getElementById(this.dataset.target).innerHTML : this.innerHTML
                 try {
                   return JSON.parse(val)
                 } catch (e) {
@@ -65,7 +65,7 @@ function surge(actions={}){
                 }
           },
           set: function(value) {
-              this.dataset.target ? document.getElementById(this.dataset.target).textContent = value :this.textContent = value
+              this.dataset.target ? document.getElementById(this.dataset.target).innerHTML = value :this.innerHTML = value
           }
       }) // end objectDefineProperty
     } // end if 

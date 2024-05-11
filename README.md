@@ -431,6 +431,7 @@ surge({
 ```
 
 #### JavaScript:
+```javascript
 const actions = {
    add: $ => e => {
      e.preventDefault()

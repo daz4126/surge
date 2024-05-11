@@ -415,6 +415,44 @@ surge({
 
 [See the code on CodePen](https://codepen.io/daz4126/pen/vYMPdPd)
 
+### To Do List
+
+![Screenshot 2024-05-11 at 17 44 53](https://github.com/daz4126/surge/assets/16646/28d94fd6-2c51-4d10-b8d7-34b6fcaca2e8)
+
+#### HTML:
+```html
+<main data-surge>
+  <form data-action="add">
+  <input id="item" placeholder="What do you want to do?"/>
+  <button type="submit">+</button>
+</form>
+  <ul id="list"></ul>
+</main>
+```
+
+#### JavaScript:
+const actions = {
+   add: $ => e => {
+     e.preventDefault()
+     $.list.append(`<li data-action="complete" data-completed=false  class="item">${$.item.value}<button data-action=delete>delete</button></li>`)
+     $.item.value = ""
+     $.item.focus()
+  },
+    complete: $ => e => {
+      if(e.target.className === "item"){
+        e.target.dataset.completed = !JSON.parse(e.target.dataset.completed)
+      }  
+    },
+  delete: $ => e => {
+    e.target.parentElement.remove()
+  }
+}
+
+surge(actions)
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/PogvwBZ)
+
 ### Fetching Data
 
 ![Screenshot 2024-04-28 at 15 04 23](https://github.com/daz4126/surge/assets/16646/040396c5-1c70-4268-b134-87f54976d73a)

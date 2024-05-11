@@ -10,7 +10,7 @@ It has no dependencies and is unbelievably small (~0.5kb)!
 
 * Add a `data-surge` attribute to the container element that you want to add reactivity to
 * Add a `data-action` attribute to the element that performs the action
-* Add a `data-reactive-value` attribute to the element that will show the value that changes
+* Add a `data-reactive` attribute to the element that will display the value that changes
 
 ```html
 <div data-surge>
@@ -155,7 +155,11 @@ This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
 The `connect` action will run once after the HTML loads and the surge function connects to it. This is useful for any setup code that needs running.
 
-### The `append` method
+## Creating Dynamic Content
+
+Elements that have been added to the Surge object have a number of methods that can be used to add dynamic content. Any content added can also use the 
+
+### `$.element.append`
 
 Every element that can be accessed using the surge object has an `append` method that can be used to append HTML to it. For example the following code would append a list item to a list:
 
@@ -174,9 +178,18 @@ surge({
 
 You can add `data-reactive` and `data-action` attributes to dynamically created HTML to create fully interactive web pages.
 
-Have a look at the examples below to see how Surge can be used to create a variety of interactive HTML.
+### `$.element.prepend`
+
+### `$.element.after`
+
+### `$.element.before`
+
+### `$.element.replace`
+
 
 # Examples
+
+Have a look at the examples below to see how Surge can be used to create a variety of interactive HTML.
 
 ### Likes Counter
 

@@ -155,13 +155,21 @@ This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
 The `connect` action will run once after the HTML loads and the surge function connects to it. This is useful for any setup code that needs running.
 
+The `connect` action is **not** an event listener so only accepts the Surge object as an argument, for example:
+
+```javascript
+connect: $ => {
+  console.log("Connected!")
+}
+``
+
 ## Creating Dynamic Content
 
 Elements that have been added to the Surge object have a number of methods that can be used to add dynamic content. Any content added can also use the 
 
 ### `$.element.append`
 
-Every element that can be accessed using the surge object has an `append` method that can be used to append HTML to it. For example the following code would append a list item to a list:
+Every element that can be accessed using the surge object has an `append` method that can be used to append HTML to it. The dynamically added HTML fragment is provided as a string and becomes the last child of the element. For example the following code would append a list item to a list:
 
 ```html
 <main data-surge>
@@ -180,12 +188,19 @@ You can add `data-reactive` and `data-action` attributes to dynamically created 
 
 ### `$.element.prepend`
 
+The `prepend` method works in the same was as `append` but inserts the HTML fragment as the first child of the element.
+
 ### `$.element.after`
+
+The `after` method will insert the HTML fragment after the element (as a sibling).
 
 ### `$.element.before`
 
+The `before` method will insert the HTML fragment before the element (as a sibling).
+
 ### `$.element.replace`
 
+The `replace` method will replace the element with the HTML fragment.
 
 # Examples
 

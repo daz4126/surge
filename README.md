@@ -112,7 +112,7 @@ Next we need to associate the value of the count with the `h1` element. To do th
 </div>
 ```
 
-This will mean that the textContent of the `h1` element starts with a value of `0`. It also means that whenever the value of the count changes, the textContent will automatically update and re-render.
+This will mean that the textContent of the `h1` element starts with a value of `0`. It also means that whenever the value of the count changes, the inner HTML will automatically update and re-render.
 
 Now we just need to define our `increment` action in the JavaScript. Actions are basically event handlers and are passed to the `surge` function as an object:
 

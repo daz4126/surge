@@ -208,7 +208,8 @@ Have a look at the examples below to see how Surge can be used to create a varie
 
 ### Likes Counter
 
-![Screenshot 2024-04-28 at 14 48 59](https://github.com/daz4126/surge/assets/16646/f71be43e-2ff2-4fff-92b9-b0ee708f715b)
+![Likes Counter](https://github.com/daz4126/surge/assets/16646/d3f98b5f-d403-4f10-affa-b9e6f14231a6)
+
 
 #### HTML:
 ```html
@@ -322,8 +323,7 @@ surge({
 
 ### Stopwatch
 
-![Screenshot 2024-04-28 at 14 54 10](https://github.com/daz4126/surge/assets/16646/0c4cca8f-cfa4-49ca-bd7a-5730ace9e8ec)
-
+![Screenshot 2024-05-18 at 10 12 29](https://github.com/daz4126/surge/assets/16646/8858d7ed-3935-4dbe-9a19-2e3ed7835b03)
 
 #### HTML:
 ```html
@@ -357,8 +357,7 @@ surge({
 
 ### Times Table Quiz
 
-![Screenshot 2024-04-28 at 14 55 37](https://github.com/daz4126/surge/assets/16646/4608975f-2e3c-4d46-8f8b-70a4d18960f1)
-
+![Times Table Quiz](https://github.com/daz4126/surge/assets/16646/50717e99-a798-4007-8edc-1b7756351a2c)
 
 #### HTML:
 ```html

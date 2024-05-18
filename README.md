@@ -286,7 +286,7 @@ surge({
 
 ### Slideshow
 
-![Screenshot 2024-04-28 at 14 52 42](https://github.com/daz4126/surge/assets/16646/f7fdd28e-0232-487f-9439-28ddb873fd63)
+![Slideshow](https://github.com/daz4126/surge/assets/16646/66001699-521d-4b8b-97c2-b9a75fffea87)
 
 
 #### HTML:

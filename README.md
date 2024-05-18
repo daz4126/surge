@@ -31,7 +31,7 @@ surge({
 ```
 That's it!
 
-![Screenshot 2024-04-28 at 15 02 33](https://github.com/daz4126/surge/assets/16646/b3670a9b-9df4-49ce-894a-03a0f16bd8a3)
+![Hello Surge!](https://github.com/daz4126/surge/assets/16646/96c7fadf-6b1f-43e2-a80f-980d953e9933)
 
 You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 
@@ -256,7 +256,7 @@ surge({
 
 ### BMI Calculator
 
-![Screenshot 2024-04-28 at 15 00 06](https://github.com/daz4126/surge/assets/16646/98018fa8-a44c-4feb-8703-01b74ff71489)
+![BMI Calculator](https://github.com/daz4126/surge/assets/16646/f6cbaecb-ebb3-42d8-a4ec-5033a3939df2)
 
 #### HTML:
 ```html

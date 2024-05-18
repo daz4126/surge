@@ -10,13 +10,13 @@ It has no dependencies and is unbelievably small (~0.5kb)!
 
 * Add a `data-surge` attribute to the container element that you want to add reactivity to
 * Add a `data-action` attribute to the element that performs the action
-* Add a `data-reactive` attribute to the element that will display the value that changes
+* Add an `id` attribute and `data-reactive` attribute to the element that will display the value that changes
 
 ```html
 <div data-surge>
   <input id="name" type="text" placeholder="Enter your name">
   <button data-action="greet">Greet</button>
-  <h1>Hello <span id="output" data-reactive>World</span></h1>
+  <h1>Hello <strong id="output" data-reactive>World</strong></h1>
 </div>
 ```
 
@@ -232,7 +232,7 @@ surge({
 
 ### Character Counter
 
-![Screenshot 2024-04-28 at 14 58 18](https://github.com/daz4126/surge/assets/16646/d823896d-a60f-486a-a689-5df7eac3137a)
+![Charcter Counter](https://github.com/daz4126/surge/assets/16646/bc408184-3989-465d-82d7-13d64b5753b7)
 
 #### HTML:
 ```html

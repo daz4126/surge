@@ -4,7 +4,7 @@
 
 Surge is a tiny library that adds reactivity to your HTML using `data` attributes. 
 
-It has no dependencies and is unbelievably small (~0.5kb)!
+It has no dependencies and is unbelievably small (~0.8kb)!
 
 # Quick Start - Hello World
 

@@ -1,4 +1,4 @@
-#  ![SURGE](https://github.com/daz4126/surge/assets/16646/d2f0f633-0778-471c-8348-89b2b1ca1c79)
+#  ![SURGE](https://github.com/daz4126/surge/assets/16646/cfadc065-905f-48fa-bf09-5355da739f3f)
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
@@ -208,13 +208,13 @@ Have a look at the examples below to see how Surge can be used to create a varie
 
 ### Likes Counter
 
-![Likes Counter](https://github.com/daz4126/surge/assets/16646/d3f98b5f-d403-4f10-affa-b9e6f14231a6)
+![Likes Counter](https://github.com/daz4126/surge/assets/16646/83a1d67d-2ec5-4d7b-998f-f33a4271dbfa)
 
 
 #### HTML:
 ```html
 <main data-surge>
-  <h1>❤️ <span id="count" data-reactive>0</span></h1>
+  <h1>❤️ <strong id="count" data-reactive>0</strong></h1>
   <button data-action="increment">👍</button>
   <button data-action="decrement">👎</button>
 </main>
@@ -470,7 +470,7 @@ surge(actions)
 
 ### Fetching Data
 
-![Screenshot 2024-04-28 at 15 04 23](https://github.com/daz4126/surge/assets/16646/040396c5-1c70-4268-b134-87f54976d73a)
+![Fetching Data](https://github.com/daz4126/surge/assets/16646/8ea5b762-b7ad-41b8-8c9d-581c03b51710)
 
 #### HTML:
 ```html

@@ -103,7 +103,7 @@ Buttons have a default event of 'click', so we can omit that and just write the 
 </div>
 ```
 
-Next we need to associate the value of the count with the `h1` element. To do this we give it an id of "count". Surge uses this to identify the element. We also use the `data-reactive` say that this element will be reactive and it's value will change dynamically. We assign an initial value of `0` by setting the text content to `0`:
+Next we need to associate the value of the count with the `h1` element. To do this we give it an id of "count". Surge uses this to identify the element. We also use the `data-reactive` attribute to tell Surge that this element will be reactive and it's value will change dynamically. We assign an initial value of `0` by setting the text content to `0`:
 
 ```html
 <div data-surge>

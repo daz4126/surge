@@ -30,7 +30,7 @@ function surge(actions={}){
      })
      // allow values to be get and set on elements
      Object.entries(el.dataset).forEach(([key,value]) => {
-      if(key !== "action" && key !== "reactive" && key !== "target"){
+      if(key !== "action" && key !== "target"){
         Object.defineProperty(el, key, {
               configurable: true,
               get: function() { 
@@ -52,23 +52,21 @@ function surge(actions={}){
         }) // end Object.defineProperty
       } // end if
     }) // end Object.entries.forEach
-    // create a reactive value if it has data-reactive
-      if(el.dataset.reactive !== undefined) {
-        // set reactive value text content
-        Object.defineProperty(el, "value", {
-          get: function() {
-             const val = this.dataset.target ? document.getElementById(this.dataset.target).textContent : this.textContent
-                try {
-                  return JSON.parse(val)
-                } catch (e) {
-                  return val
-                }
-          },
-          set: function(value) {
-              this.dataset.target ? document.getElementById(this.dataset.target).textContent = value :this.textContent = value
-          }
-      }) // end objectDefineProperty
-    } // end if 
+    // create a reactive value
+      // set reactive value text content
+      Object.defineProperty(el, "value", {
+        get: function() {
+            const val = this.dataset.target ? document.getElementById(this.dataset.target).textContent : this.textContent
+              try {
+                return JSON.parse(val)
+              } catch (e) {
+                return val
+              }
+        },
+        set: function(value) {
+            this.dataset.target ? document.getElementById(this.dataset.target).textContent = value :this.textContent = value
+        }
+    }) // end objectDefineProperty
     // add id references to the surge object
     $[el.id] = el
   }

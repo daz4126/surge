@@ -54,7 +54,7 @@ function surge(actions={}){
     }) // end Object.entries.forEach
     // create a reactive value
       // set reactive value text content
-      Object.defineProperty(el, "value", {
+      Object.defineProperty(el, "val", {
         get: function() {
             const val = this.dataset.target ? document.getElementById(this.dataset.target).textContent : this.textContent
               try {

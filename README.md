@@ -6,11 +6,11 @@ Surge is a tiny library that adds reactivity to your HTML using `data` attribute
 
 It has no dependencies and is unbelievably small (~0.8kb)!
 
-# Quick Start - Hello World
+# Hello Surge
 
 * Add a `data-surge` attribute to the container element that you want to add reactivity to
 * Add a `data-action` attribute to the element that performs the action
-* Add an `id` attribute to any elements that will display values that will change
+* Add an `id` attribute to any elements that will contain reactive content
 
 ```html
 <div data-surge>
@@ -20,10 +20,10 @@ It has no dependencies and is unbelievably small (~0.8kb)!
 </div>
 ```
 
-* Define the action that was referenced in the `data-action` attribute
-* Use `$` to access any elements with an `id`
+* Define any actions that was referenced in the `data-action` attribute
+* Use the *Surge object* (`$`) to access any elements with an `id`
 * Use the `value` property to update the text content of an element
-* Pass it to the `surge` function in the JavaScript:
+* Pass the actions object to the `surge` function in the JavaScript:
 
 ```javascript
 surge({

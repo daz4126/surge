@@ -54,19 +54,21 @@ function surge(actions={}){
     }) // end Object.entries.forEach
     // create a reactive value
       // set reactive value text content
-      Object.defineProperty(el, "val", {
-        get: function() {
-            const val = this.dataset.target ? document.getElementById(this.dataset.target).textContent : this.textContent
-              try {
-                return JSON.parse(val)
-              } catch (e) {
-                return val
-              }
-        },
-        set: function(value) {
-            this.dataset.target ? document.getElementById(this.dataset.target).textContent = value :this.textContent = value
-        }
-    }) // end objectDefineProperty
+      if(el.tagName !== "INPUT"){
+        Object.defineProperty(el, "value", {
+          get: function() {
+              const val = this.dataset.target ? document.getElementById(this.dataset.target).textContent : this.textContent
+                try {
+                  return JSON.parse(val)
+                } catch (e) {
+                  return val
+                }
+          },
+          set: function(value) {
+              this.dataset.target ? document.getElementById(this.dataset.target).textContent = value :this.textContent = value
+          }
+      }) // end objectDefineProperty
+    }
     // add id references to the surge object
     $[el.id] = el
   }

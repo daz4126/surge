@@ -1,4 +1,4 @@
-#  ![SURGE](https://github.com/daz4126/surge/assets/16646/cfadc065-905f-48fa-bf09-5355da739f3f)
+# ![SURGE](https://github.com/daz4126/surge/assets/16646/cfadc065-905f-48fa-bf09-5355da739f3f)
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
@@ -10,18 +10,19 @@ It has no dependencies and is unbelievably small (~0.8kb)!
 
 * Add a `data-surge` attribute to the container element that you want to add reactivity to
 * Add a `data-action` attribute to the element that performs the action
-* Add an `id` attribute and `data-reactive` attribute to the element that will display the value that changes
+* Add an `id` attribute to any elements that will display values that will change
 
 ```html
 <div data-surge>
   <input id="name" type="text" placeholder="Enter your name">
   <button data-action="greet">Greet</button>
-  <h1>Hello <strong id="output" data-reactive>World</strong></h1>
+  <h1>Hello <strong id="output">World</strong></h1>
 </div>
 ```
 
 * Define the action that was referenced in the `data-action` attribute
 * Use `$` to access any elements with an `id`
+* Use the `value` property to update the text content of an element
 * Pass it to the `surge` function in the JavaScript:
 
 ```javascript
@@ -103,16 +104,16 @@ Buttons have a default event of 'click', so we can omit that and just write the 
 </div>
 ```
 
-Next we need to associate the value of the count with the `h1` element. To do this we give it an id of "count". Surge uses this to identify the element. We also use the `data-reactive` attribute to tell Surge that this element will be reactive and it's value will change dynamically. We assign an initial value of `0` by setting the text content to `0`:
+Next we need to associate the value of the count with the `h1` element. To do this we give it an id of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its `value` property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
 
 ```html
 <div data-surge>
   <button data-action="increment">Increase Count</button>
-  <h1 id="count" data-reactive>0</h1>
+  <h1 id="count">0</h1>
 </div>
 ```
 
-This will mean that the text content of the `h1` element starts with a value of `0`. It also means that whenever the value of the count changes, the text content will automatically update and re-render.
+This will mean that the text content of the `h1` element starts with a value of `0`. It also means that whenever the `value` property of the count changes, the text content will automatically update and re-render.
 
 Now we just need to define our `increment` action in the JavaScript. Actions are basically event handlers and are passed to the `surge` function as an object:
 
@@ -125,9 +126,9 @@ Surge actions look slightly strange at first, but they always have the same para
 
 The surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `h1` element).
 
-Any element references also have access to any values set using `data` attributes. Any reactive values can be accessed using the `value` property. So in the example abvove `$.count.value` has an initial value of `0`. This value can then be updated just like any othe variable, so using the increment operator, `++`, will increase its value by 1. Because it was marked as a reactive-value, any changes will automatically update the HTML with the new value, so every time the button is pressed, the next number will be displayed.
+Any element references also have access to any values set using `data` attributes. The text content of the element can be accessed using the `value` property. So in the example abvove `$.count.val` has an initial value of `0`. This value can then be updated just like any othe variable, so using the increment operator, `++`, will increase its value by 1. Any changes will automatically update the HTML with the new value, so every time the button is pressed, the next number will be displayed.
 
-As well as `data-reactive`, other values can be set using the `data` attribute. These values will be name-spaced to the element they are set on and can be accessed by the surge object (as long as they element they are set on is given an id).
+Other values can be set using the `data` attribute. These values will be name-spaced to the element they are set on and can be accessed by the surge object (as long as they element they are set on is given an id).
 
 This is useful if you want to set a parameter for actions in the HTML. For example, let's add another button that increases the count by a value set in the HTML:
 
@@ -135,7 +136,7 @@ This is useful if you want to set a parameter for actions in the HTML. For examp
 <div data-surge>
   <button id="btn1" data-action="increment">Increase by 1</button>
   <button id="btn2" data-action="increment" data-amount=2>Increase by 2</button>
-  <h1 id="count" data-reactive-value=0></h1>
+  <h1 id="count">0</h1>
 </div>
 ```
 
@@ -214,7 +215,7 @@ Have a look at the examples below to see how Surge can be used to create a varie
 #### HTML:
 ```html
 <main data-surge>
-  <h1>❤️ <strong id="count" data-reactive>0</strong></h1>
+  <h1>❤️ <strong id="count">0</strong></h1>
   <button data-action="increment">👍</button>
   <button data-action="decrement">👎</button>
 </main>
@@ -240,7 +241,7 @@ surge({
   <textarea data-action="count"></textarea>
   <p>
     There are
-    <strong id="count" data-reactive>0</strong> characters in this textarea.
+    <strong id="count">0</strong> characters in this textarea.
   </p>
 </main>
 ```
@@ -262,13 +263,13 @@ surge({
 ```html
 <main data-surge>
   <h2>BMI Calculator</h2>
-  <h2>BMI: <span id="bmi" data-reactive></span></h2>
+  <h2>BMI: <strong id="bmi">25</strong></h2>
   <label>Weight (kg):</label>
   <input type="range" min=0 max=150 data-action="update" data-target="weight" value=45>
-  <h2 id="weight" data-reactive>75</h2>
+  <h2 id="weight">75</h2>
   <label>Height (cm):</label>
   <input type="range" min=0 max=250 data-action="update" data-target="height" value=150>
-  <h2 id="height" data-reactive>25</h2>
+  <h2 id="height">25</h2>
 </main>
 ```
 
@@ -276,8 +277,8 @@ surge({
 ```javascript
 surge({
   update: $ => e => {
-    $[e.target.dataset.target].value = e.target.value
-    $.bmi.value = ($.weight.value / ($.height.value/100)**2).toFixed(1)
+    $[e.target.dataset.target].val = e.target.value
+    $.bmi.val = ($.weight.val / ($.height.value/100)**2).toFixed(1)
   }
 })
 ```
@@ -328,8 +329,8 @@ surge({
 #### HTML:
 ```html
 <main data-surge>
-  <h1 id="time" data-reactive>0.00</h1>
-  <button id="toggleBtn" data-reactive-value="Start" data-action="toggle">Start</button>
+  <h1 id="time">0.00</h1>
+  <button id="toggleBtn" data-action="toggle">Start</button>
   <button data-action="reset">Reset</button>
 </main>
 ```
@@ -364,14 +365,14 @@ surge({
 <main data-surge>
   <div id="game">
   <h2>Times Tables</h2>
-  <h2>Score: <span id="score" data-reactive>0</span></h2>
-  <h1><span id="question" data-reactive>1</span>) <span id="x" data-reactive></span> &times; <span id="y" data-reactive></span> = <span id="answer" data-reactive></span><span id="feedback" data-reactive></span></h1>
+  <h2>Score: <span id="score">0</span></h2>
+  <h1><span id="question">1</span>) <span id="x"></span> &times; <span id="y"></span> = <span id="answer"></span><span id="feedback"></span></h1>
   <form data-action="check">
     <input id="userAnswer" />
   </form>
   </div>
   <div id="info" hidden=true>
-  <h2 id="message" data-reactive></h2>
+  <h2 id="message"></h2>
     <button data-action="newGame">Play Again</button>
   </div>
 </main>
@@ -420,7 +421,7 @@ surge({
     $.score.value = 0
     $.game.hidden = false
     $.info.hidden = true
-    $.answer.textContent = ""
+    $.answer.value = ""
     $.userAnswer.value = ""
     $.feedback.value = ""
   },
@@ -449,7 +450,7 @@ surge({
 const actions = {
    add: $ => e => {
      e.preventDefault()
-     $.list.append(`<li data-action="complete" data-completed=false  class="item">${$.item.value}<button data-action=delete>delete</button></li>`)
+     $.list.append(`<li data-action="complete" data-completed=false  class="item">${$.item.val}<button data-action=delete>delete</button></li>`)
      $.item.value = ""
      $.item.focus()
   },

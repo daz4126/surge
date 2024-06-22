@@ -185,7 +185,9 @@ surge({
 })
 ```
 
-You can add `data-reactive` and `data-action` attributes to dynamically created HTML to create fully interactive web pages.
+You can add `id`s and `data-action` attributes to dynamically created HTML to create fully interactive web pages.
+
+**See the To Do List example below for this in action**
 
 ### `$.element.prepend`
 
@@ -222,6 +224,8 @@ $.state.username = "Taylor"
 ```
 
 The key thing to remember is that the Surge object acts just like a regular object and is available in every action.
+
+** See the Stopwatch example below for this technique being used to keep track of whether the clock is ticking **
 
 # Examples
 

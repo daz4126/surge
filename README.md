@@ -203,6 +203,26 @@ The `before` method will insert the HTML fragment before the element (as a sibli
 
 The `replace` method will replace the element with the HTML fragment.
 
+## State Management
+
+The Surge object, `$`, is effectively a global object to the app, so is perfect for managing shared state.
+
+You can add properites directly to the Surge object using the dot notation:
+
+```
+$.username = "Taylor"
+```
+
+This will now be accessible in all of the actions.
+
+If you are using a lot of properties in this way, it might be worth namespacing these values:
+
+```
+$.state.username = "Taylor"
+```
+
+The key thing to remember is that the Surge object acts just like a regular object and is available in every action.
+
 # Examples
 
 Have a look at the examples below to see how Surge can be used to create a variety of interactive HTML.

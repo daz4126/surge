@@ -2,7 +2,7 @@
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
-Surge is a tiny library that adds reactivity to your HTML using `data` attributes. 
+Surge is a tiny library that adds reactivity to your HTML using `id`s and `data` attributes. 
 
 It has no dependencies and is unbelievably small (~0.8kb)!
 
@@ -27,7 +27,7 @@ It has no dependencies and is unbelievably small (~0.8kb)!
 
 ```javascript
 surge({
-    greet: $ => e => $.output.value = $.name.value
+    greet: $ => $.output.value = $.name.value
 })
 ```
 That's it!
@@ -119,12 +119,20 @@ Now we just need to define our `increment` action in the JavaScript. Actions are
 
 ```javascript
 surge({
-    increment: $ => e => $.count.value++
+    increment: ($,e) => $.count.value++
 })
 ```
-Surge actions look slightly strange at first, but they always have the same parameters - the *surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event handler, but the surge object has some extra methods that can be used to access and update the elements that have been marked with an id attribute.
+Surge actions are very similar to event listeners. They have two parameters - the *Surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event handler, but the Surge object has some extra methods that can be used to access and update the elements that have been marked with an id attribute.
 
-The surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `h1` element).
+Note that in the example above, we don't use the event object, so we can omit it from the action definition:
+
+```javascript
+surge({
+    increment: $ => $.count.value++
+})
+```
+
+The Surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `h1` element).
 
 Any element references also have access to any values set using `data` attributes. The text content of the element can be accessed using the `value` property. So in the example abvove `$.count.val` has an initial value of `0`. This value can then be updated just like any othe variable, so using the increment operator, `++`, will increase its value by 1. Any changes will automatically update the HTML with the new value, so every time the button is pressed, the next number will be displayed.
 
@@ -156,7 +164,7 @@ This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
 The `connect` action will run once after the HTML loads and the surge function connects to it. This is useful for any setup code that needs running.
 
-The `connect` action is **not** an event listener so only accepts the Surge object as an argument, for example:
+The `connect` action is **not** an event listener so only accepts the Surge object as it's only argument, for example:
 
 ```javascript
 connect: $ => {
@@ -170,7 +178,7 @@ Elements that have been added to the Surge object have a number of methods that 
 
 ### `$.element.append`
 
-Every element that can be accessed using the surge object has an `append` method that can be used to append HTML to it. The dynamically added HTML fragment is provided as a string and becomes the last child of the element. For example the following code would append a list item to a list:
+Every element that can be accessed using the Surge object has an `append` method that can be used to append HTML to it. The dynamically added HTML fragment is provided as a string and becomes the last child of the element. For example the following code would append a list item to a list:
 
 ```html
 <main data-surge>
@@ -205,9 +213,27 @@ The `before` method will insert the HTML fragment before the element (as a sibli
 
 The `replace` method will replace the element with the HTML fragment.
 
-## State Management
+# State Management
 
-The Surge object, `$`, is effectively a global object to the app, so is perfect for managing shared state.
+State can be managed at an element level by using `data` attribues. These can be used to set properties of the element that can be accessed using the Surge object. For example, you can keep track of whether an item is important or not:
+
+```html
+<h1 id="heading" data-important=true data-action'="click->highlight">Something Important</h1>
+```
+
+This can then be accessed in the action code:
+
+```javascript
+highlight: $ => {
+  if($.heading.important){
+    $.heading.style.color = "red"
+  } else {
+    $.heading.style.color = "yellow"
+  }
+}
+```
+
+The Surge object, `$`, is effectively a global object of the app, so is perfect for managing shared state that you want to share around the whole app.
 
 You can add properites directly to the Surge object using the dot notation:
 
@@ -248,8 +274,8 @@ Have a look at the examples below to see how Surge can be used to create a varie
 #### JavaScript:
 ```javascript
 surge({
-  increment: $ => e => $.count.value++,
-  decrement: $ => e => $.count.value--
+  increment: $ => $.count.value++,
+  decrement: $ => $.count.value--
 })
 ```
 
@@ -273,7 +299,7 @@ surge({
 #### JavaScript:
 ```javascript
 surge({
-  count: $ => e => $.count.value = e.target.value.length
+  count: ($,e) => $.count.value = e.target.value.length
 })
 ```
 
@@ -300,7 +326,7 @@ surge({
 #### JavaScript:
 ```javascript
 surge({
-  update: $ => e => {
+  update: ($ ,e) => {
     $[e.target.dataset.target].val = e.target.value
     $.bmi.val = ($.weight.val / ($.height.value/100)**2).toFixed(1)
   }
@@ -333,11 +359,11 @@ surge({
 const showCurrentSlide = (slides,i) =>  [...slides].forEach((element, j) => element.hidden = j !== i)
 
 surge({
-  next: $ => e => {
+  next: $ => {
     $.slides.index = ($.slides.index + 1)%4
     showCurrentSlide($.slides.children,$.slides.index)
   },
-  previous: $ => e => {
+  previous: $ => {
     $.slides.index = (($.slides.index - 1)%4+4)%4
     showCurrentSlide($.slides.children,$.slides.index)
   }
@@ -362,7 +388,7 @@ surge({
 #### JavaScript:
 ```javascript
 surge({
-  toggle: $ => e => {
+  toggle: $ => {
     $.toggleBtn.value = $.ticking ? "Start" : "Stop"
     if($.ticking){
       $.ticking = clearInterval($.ticking)
@@ -372,7 +398,7 @@ surge({
     },10)
     }
   },
-  reset: $ => e =>{
+  reset: $ => {
     $.time.value = (0).toFixed(2)
   }
 })
@@ -416,7 +442,7 @@ surge({
   connect: $ => {
     generateQuestion($.x,$.y)
   },
-  check: $ => e => {
+  check: ($,e) => {
     e.preventDefault()
     $.answer.value = $.userAnswer.value
     if($.userAnswer.value == $.x.value * $.y.value){
@@ -439,7 +465,7 @@ surge({
     }
     },700)
   },
-  newGame: $ => e => {
+  newGame: $ => {
     generateQuestion($.x,$.y)
     $.question.value = 1
     $.score.value = 0
@@ -472,18 +498,18 @@ surge({
 #### JavaScript:
 ```javascript
 const actions = {
-   add: $ => e => {
+   add: ($,e) => {
      e.preventDefault()
      $.list.append(`<li data-action="complete" data-completed=false  class="item">${$.item.val}<button data-action=delete>delete</button></li>`)
      $.item.value = ""
      $.item.focus()
   },
-    complete: $ => e => {
+    complete: ($,e)  => {
       if(e.target.className === "item"){
         e.target.dataset.completed = !JSON.parse(e.target.dataset.completed)
       }  
     },
-  delete: $ => e => {
+  delete: ($,e)  => {
     e.target.parentElement.remove()
   }
 }

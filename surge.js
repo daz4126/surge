@@ -82,7 +82,11 @@ function surge(actions={}){
               : element.tagName == "SELECT" ? "change"
               : "click"
               ,element.dataset.action]
-        element.addEventListener(event,e => actions[action]($,e))
+        element.addEventListener(event,e => {
+          actions[action]($,e)
+          $.e = $.event = e
+          $.target = e.target
+        )}
   }
 }
 export default surge

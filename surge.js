@@ -86,7 +86,7 @@ function surge(actions={}){
           actions[action]($,e)
           $.e = $.event = e
           $.target = e.target
-        )}
+        })
   }
 }
 export default surge

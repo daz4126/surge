@@ -152,7 +152,7 @@ Our new button has an id of "btn2" and a `data-amount` attribute set to 2. This 
 
 ```javascript
 surge({
-    increment: $ => e => $.count.value += $[e.target.id].amount || 1
+    increment: $ => $.count.value += $.target.amount || 1
 })
 ```
 
@@ -238,7 +238,7 @@ The Surge object, `$`, is effectively a global object of the app, so is perfect 
 You can add properites directly to the Surge object using the dot notation:
 
 ```
-$.username = "Taylor"
+$.username = "Ada"
 ```
 
 This will now be accessible in all of the actions.
@@ -246,7 +246,7 @@ This will now be accessible in all of the actions.
 If you are using a lot of properties in this way, it might be worth namespacing these values:
 
 ```
-$.state.username = "Taylor"
+$.state.username = "Ada"
 ```
 
 The key thing to remember is that the Surge object acts just like a regular object and is available in every action.
@@ -326,9 +326,9 @@ surge({
 #### JavaScript:
 ```javascript
 surge({
-  update: ($ ,e) => {
-    $[e.target.dataset.target].val = e.target.value
-    $.bmi.val = ($.weight.val / ($.height.value/100)**2).toFixed(1)
+  update: $ => {
+    $[$.target.dataset.target].value = $.target.value
+    $.bmi.value = ($.weight.value / ($.height.value/100)**2).toFixed(1)
   }
 })
 ```
@@ -442,8 +442,8 @@ surge({
   connect: $ => {
     generateQuestion($.x,$.y)
   },
-  check: ($,e) => {
-    e.preventDefault()
+  check: $ => {
+    $.e.preventDefault()
     $.answer.value = $.userAnswer.value
     if($.userAnswer.value == $.x.value * $.y.value){
       $.score.value ++
@@ -498,20 +498,18 @@ surge({
 #### JavaScript:
 ```javascript
 const actions = {
-   add: ($,e) => {
-     e.preventDefault()
+   add: $ => {
+     $.e.preventDefault()
      $.list.append(`<li data-action="complete" data-completed=false  class="item">${$.item.val}<button data-action=delete>delete</button></li>`)
      $.item.value = ""
      $.item.focus()
   },
-    complete: ($,e)  => {
-      if(e.target.className === "item"){
-        e.target.dataset.completed = !JSON.parse(e.target.dataset.completed)
+    complete: $ => {
+      if($.target.className === "item"){
+        $.target.dataset.completed = !JSON.parse($.target.dataset.completed)
       }  
     },
-  delete: ($,e)  => {
-    e.target.parentElement.remove()
-  }
+  delete: $ => $.target.parentElement.remove()
 }
 
 surge(actions)

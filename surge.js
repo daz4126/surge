@@ -82,11 +82,11 @@ function surge(actions={}){
               : element.tagName == "SELECT" ? "change"
               : "click"
               ,element.dataset.action]
-        element.addEventListener(event,e => {
-          $.preventDefault = e.preventDefault
-          $.target = e.target
-          actions[action]($,e)
-        )}
+    element.addEventListener(event,e => {
+      $.preventDefault = e.preventDefault
+      $.target = e.target
+      actions[action]($,e)
+    })
   }
 }
 export default surge

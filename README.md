@@ -196,7 +196,7 @@ Every element that can be accessed using the Surge object has an `append` method
 
 ```javascript
 surge({
-  add: $ => e => $.list.append(`<li>Item number ${$.list.size++}</li>`)
+  add: $ => $.list.append(`<li>Item number ${$.list.size++}</li>`)
 })
 ```
 

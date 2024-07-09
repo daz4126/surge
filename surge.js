@@ -83,9 +83,9 @@ function surge(actions={}){
               : "click"
               ,element.dataset.action]
         element.addEventListener(event,e => {
-          actions[action]($,e)
-          $.e = $.event = e
+          $.preventDefault = e.preventDefault
           $.target = e.target
+          actions[action]($,e)
         )}
   }
 }

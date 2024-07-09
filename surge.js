@@ -75,7 +75,7 @@ function surge(actions={}){
   // Add any event listeners based on the data-action attributes
   function addAction(element){
     const [event,action] = element.dataset.action.includes("->") ?
-          [element.dataset.action.split("->")[0],a.dataset.action.split("->")[1]]
+          [element.dataset.action.split("->")[0].trim(),element.dataset.action.split("->")[1].trim()]
           // default events for certain elements
           : [element.tagName === "FORM" ? "submit" 
               : element.tagName === "INPUT" && element.type !== "submit" || element.tagName === "TEXTAREA" ? "input"

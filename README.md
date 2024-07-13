@@ -2,14 +2,16 @@
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
-Surge is a tiny library that adds reactivity to your HTML using `id`s and `data` attributes. 
+Surge is a tiny library that adds reactivity to your HTML. 
 
 It has no dependencies and is unbelievably small (~0.8kb)!
 
 # Hello Surge
 
+## 1. Write Some HTML
+
 * Add a `data-surge` attribute to the container element that you want to add reactivity to
-* Add a `data-action` attribute to the element that performs the action
+* Add a `data-action` attribute to any element that performs an action
 * Add an `id` attribute to any elements that will contain reactive content
 
 ```html
@@ -20,7 +22,9 @@ It has no dependencies and is unbelievably small (~0.8kb)!
 </div>
 ```
 
-* Define any actions that was referenced in the `data-action` attribute
+## 2. Add Some JS
+
+* Define the actions referenced in any `data-action` attributes
 * Use the *Surge object* (`$`) to access any elements with an `id`
 * Use the `value` property to update the text content of an element
 * Pass the actions object to the `surge` function in the JavaScript:
@@ -36,7 +40,7 @@ That's it!
 
 You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 
-Surge was inspired by the excellent [Stimulus](https://stimulus.hotwired.dev) library.
+Surge was inspired by the brilliant [Stimulus](https://stimulus.hotwired.dev) library.
 
 # Reference
 
@@ -66,12 +70,11 @@ Surge works by adding `data` attributes to your HTML.
 
 Let's look at a simple example to illustrate how it works.
 
-We'll make a little counter app that increases the count when a button is pressed.
+We'll make a little counter app that tracks how many times a button has been pressed.
 
 ```html
 <div>
-  <button>Increase Count</button>
-  <h1></h1>
+  <button>Pressed <span>0</span> times</button>
 </div>
 ```
 
@@ -79,8 +82,7 @@ First, we need to add a `data-surge` attribute to the container element to ident
 
 ```html
 <div data-surge>
-  <button>Increase Count</button>
-  <h1></h1>
+  <button>Pressed <span>0</span> times</button>
 </div>
 ```
 
@@ -88,32 +90,29 @@ Next we need to add a `data-action` attribute to the button. This tells Surge wh
 
 ```html
 <div data-surge>
-  <button data-action="click->increment">Increase Count</button>
-  <h1></h1>
+  <button data-action="click->increment">Pressed <span>0</span> times</button>
 </div>
 ```
 
 This means that when the button is clicked the action called `increment` will be called.
 
-Buttons have a default event of 'click', so we can omit that and just write the name of the action:
+Buttons have a default event of 'click', so we can omit the reference to it and just write the name of the action:
 
 ```html
 <div data-surge>
-  <button data-action="increment">Increase Count</button>
-  <h1></h1>
+  <button data-action="increment">Pressed <span>0</span> times</button>
 </div>
 ```
 
-Next we need to associate the value of the count with the `h1` element. To do this we give it an id of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its `value` property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
+Next we need to associate the value of the count with the `span` element inside the button. To do this we give it an id of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its `value` property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
 
 ```html
 <div data-surge>
-  <button data-action="increment">Increase Count</button>
-  <h1 id="count">0</h1>
+  <button data-action="increment">Pressed <span id="count">0</span> times</button>
 </div>
 ```
 
-This will mean that the text content of the `h1` element starts with a value of `0`. It also means that whenever the `value` property of the count changes, the text content will automatically update and re-render.
+This will mean that the text content of the `span` element starts with a value of `0`. It also means that whenever the `value` property of the count changes, the text content will automatically update and re-render.
 
 Now we just need to define our `increment` action in the JavaScript. Actions are basically event handlers and are passed to the `surge` function as an object:
 
@@ -132,13 +131,13 @@ surge({
 })
 ```
 
-The Surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `h1` element).
+The Surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `span` element).
 
-Any element references also have access to any values set using `data` attributes. The text content of the element can be accessed using the `value` property. So in the example abvove `$.count.val` has an initial value of `0`. This value can then be updated just like any othe variable, so using the increment operator, `++`, will increase its value by 1. Any changes will automatically update the HTML with the new value, so every time the button is pressed, the next number will be displayed.
+Any element references also have access to any values set using `data` attributes. The text content of the element can be accessed using the `value` property. So in the example abvove `$.count.value` has an initial value of `0`. This value can then be updated just like any othe variable, so using the increment operator, `++`, will increase its value by 1. Any changes will automatically update the text content of the element with the new value, so every time the button is pressed, the next number will be displayed.
 
 Other values can be set using the `data` attribute. These values will be name-spaced to the element they are set on and can be accessed by the surge object (as long as they element they are set on is given an id).
 
-This is useful if you want to set a parameter for actions in the HTML. For example, let's add another button that increases the count by a value set in the HTML:
+This is useful if you want to set a parameter for actions in the HTML. For example, let's change the example so that it uses two buttons that both use the same action to increase the count that is stored in a `h1` element:
 
 ```html
 <div data-surge>
@@ -152,11 +151,23 @@ Our new button has an id of "btn2" and a `data-amount` attribute set to 2. This 
 
 ```javascript
 surge({
+<<<<<<< HEAD
     increment: $ => $.count.value += $.target.amount || 1
+=======
+    increment: ($,e) => $.count.value += $[e.target.id].amount || 1
+>>>>>>> 3825909dddd8e7a963acab830cde675730faf651
 })
 ```
 
 This uses the event object's `target` property to find the id of the element that was clicked on. We then use the surge object to access the `amount` value. If this isn't set, we default to a value of 1.
+
+Because the `event.target` property is used so often, it is aliased inside the Surge object, so the code above can be simplified as:
+
+```javascript
+surge({
+    increment: $ => $.count.value += $.target.amount || 1
+})
+```
 
 This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
@@ -189,7 +200,7 @@ Every element that can be accessed using the Surge object has an `append` method
 
 ```javascript
 surge({
-  add: $ => e => $.list.append(`<li>Item number ${$.list.size++}</li>`)
+  add: $ => $.list.append(`<li>Item number ${$.list.size++}</li>`)
 })
 ```
 

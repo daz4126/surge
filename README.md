@@ -6,6 +6,8 @@ Surge is a tiny library that adds reactivity to your HTML.
 
 It has no dependencies and is unbelievably small (~0.8kb)!
 
+Surge allows you to write reactive applications with a minimal amount of code in any coding style.
+
 # Hello Surge
 
 ## 1. Write Some HTML
@@ -34,7 +36,7 @@ surge({
     greet: $ => $.output.value = $.name.value
 })
 ```
-That's it!
+## That's it, there is no Step 3!!
 
 ![Hello Surge!](https://github.com/daz4126/surge/assets/16646/96c7fadf-6b1f-43e2-a80f-980d953e9933)
 

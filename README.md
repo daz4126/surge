@@ -244,7 +244,7 @@ highlight: $ => {
 }
 ```
 
-The Surge object, `$`, is effectively a global object of the app, so is perfect for managing shared state that you want to share around the whole app.
+The Surge object, `$`, is effectively a global object of the app and is available to every action, so is perfect for managing shared state that you want to share around the whole app.
 
 You can add properites directly to the Surge object using the dot notation:
 
@@ -262,7 +262,7 @@ $.state.username = "Ada"
 
 The key thing to remember is that the Surge object acts just like a regular object and is available in every action.
 
-** See the Stopwatch example below for this technique being used to keep track of whether the clock is ticking **
+**See the Stopwatch example below for this technique being used to keep track of whether the clock is ticking**
 
 # Examples
 

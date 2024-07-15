@@ -36,7 +36,7 @@ surge({
     greet: $ => $.output.value = $.name.value
 })
 ```
-## That's it, there is no Step 3!!
+## 3. That's it, there is no Step 3!!
 
 ![Hello Surge!](https://github.com/daz4126/surge/assets/16646/96c7fadf-6b1f-43e2-a80f-980d953e9933)
 

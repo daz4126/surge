@@ -153,11 +153,7 @@ Our new button has an id of "btn2" and a `data-amount` attribute set to 2. This 
 
 ```javascript
 surge({
-<<<<<<< HEAD
-    increment: $ => $.count.value += $.target.amount || 1
-=======
     increment: ($,e) => $.count.value += $[e.target.id].amount || 1
->>>>>>> 3825909dddd8e7a963acab830cde675730faf651
 })
 ```
 

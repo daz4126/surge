@@ -1,92 +1,135 @@
-function surge(actions={}){
-  // The surge object
-  const $ = {}
-  // any elements that have an id inside the data-surge container  
-  Array.from(document.querySelectorAll("[data-surge] [id]")).forEach(el => {
-    addToSurge(el)
-  })
-  // create event listeners based on data-action attributes
-  Array.from(document.querySelectorAll("[data-surge] [data-action]")).forEach(element => addAction(element))
-  // run the connect action if it exists
-  if(actions.connect){
-      actions.connect($)
-  }
-  // Surgify an element to be a prop of the Surge object                    
-  function addToSurge(el){
-    // Make these DOM methods pick up on any data-attributes attached to dynamically added content
-      ["append","prepend","before","after","replace"].forEach(position => {
-       const fn = position === "replace" ? el.replaceWith : el[position]
-       el[position] = html => {
-        const template = document.createElement("template") 
-        template.innerHTML = typeof html === "object" ? html.outerHTML : html
-        Object.values(template.content.children).forEach(child => {
-         fn.call(el,child)
-         if(child.id) addToSurge(child)
-         if(child.dataset.action) addAction(child)
-         Array.from(child.querySelectorAll("[id]")).forEach(el => addToSurge(el))
-         Array.from(child.querySelectorAll("[data-action]")).forEach(el => addAction(el))
-       })
-       }
-     })
-     // allow values to be get and set on elements
-     Object.entries(el.dataset).forEach(([key,value]) => {
-      if(key !== "action" && key !== "target"){
-        Object.defineProperty(el, key, {
-              configurable: true,
-              get: function() { 
-                const val = el.dataset[key]
-                try {
-                  return JSON.parse(val)
-                } catch (e) {
-                  return val
-                }
-              },
-              set: function(value) {
-                try {
-                  JSON.parse(value)
-                  el.setAttribute("data-"+key,JSON.stringify(value))
-                } catch (e) {
-                   el.setAttribute("data-"+key,value)
-                }
-              }
-        }) // end Object.defineProperty
-      } // end if
-    }) // end Object.entries.forEach
-    // create a reactive value
-      // set reactive value text content
-      if(el.tagName !== "INPUT"){
-        Object.defineProperty(el, "value", {
-          get: function() {
-              const val = this.dataset.target ? document.getElementById(this.dataset.target).textContent : this.textContent
-                try {
-                  return JSON.parse(val)
-                } catch (e) {
-                  return val
-                }
-          },
-          set: function(value) {
-              this.dataset.target ? document.getElementById(this.dataset.target).textContent = value :this.textContent = value
-          }
-      }) // end objectDefineProperty
+function surge(actions = {}) {
+  // Initialize the surge object
+  const $ = {};
+
+  // Cache DOM queries
+  const surgeContainer = document.querySelector("[data-surge]");
+  if (!surgeContainer) return;
+
+  const localStorageKey = surgeContainer.dataset.localStorage || null;
+
+  // Cache all elements with ID and/or data-action
+  const elementsWithId = surgeContainer.querySelectorAll("[id]");
+  const elementsWithAction = surgeContainer.querySelectorAll("[data-action]");
+
+  // Apply local storage data and initialize elements with IDs
+  elementsWithId.forEach(el => {
+    if (localStorageKey && localStorage.getItem(`${localStorageKey}-${el.id}`)) {
+      el.textContent = JSON.parse(localStorage.getItem(`${localStorageKey}-${el.id}`));
     }
-    // add id references to the surge object
-    $[el.id] = el
+    addToSurge(el);
+  });
+
+  // Initialize elements with actions
+  elementsWithAction.forEach(el => addAction(el));
+
+  // Run the initialize action if it exists
+  if (actions.initialize) actions.initialize($);
+
+  // Surgify an element to be a prop of the Surge object
+  function addToSurge(el) {
+    // Use requestAnimationFrame to batch DOM manipulations
+    requestAnimationFrame(() => {
+      // Enhance DOM manipulation methods for dynamically added content
+      ["append", "prepend", "before", "after", "replaceWith"].forEach(position => {
+        const originalFn = el[position].bind(el); // Bind the original method
+
+        el[position] = (html) => {
+          const template = document.createElement("template");
+          template.innerHTML = typeof html === "object" ? html.outerHTML : html;
+
+          requestAnimationFrame(() => {
+            Array.from(template.content.children).forEach(child => {
+              originalFn(child);
+              processChild(child); // Process newly added elements
+            });
+          });
+        };
+      });
+
+      // Create reactive data binding for element
+      Object.entries(el.dataset).forEach(([key, value]) => {
+        if (key !== "action" && key !== "target") {
+          Object.defineProperty(el, key, {
+            configurable: true,
+            get() {
+              const val = el.dataset[key];
+              try {
+                return JSON.parse(val);
+              } catch {
+                return val;
+              }
+            },
+            set: function(value) {
+              try {
+                JSON.parse(value)
+                el.setAttribute("data-"+key,JSON.stringify(value))
+              } catch (e) {
+                 el.setAttribute("data-"+key,value)
+              }
+            }
+          });
+        }
+      });
+
+      // Set up reactive `value` property for non-input elements
+      if (el.tagName !== "INPUT") {
+        Object.defineProperty(el, "value", {
+          get() {
+            const targetEl = document.getElementById(el.dataset.target);
+            const val = targetEl ? targetEl.textContent : el.textContent;
+            try {
+              return JSON.parse(val);
+            } catch {
+              return val;
+            }
+          },
+          set(value) {
+            const targetEl = document.getElementById(el.dataset.target);
+            if (targetEl) targetEl.textContent = value;
+            else el.textContent = value;
+
+            if (localStorageKey && !targetEl.dataset.noLocalStorage) {
+              localStorage.setItem(`${localStorageKey}-${el.dataset.target || el.id}`, value);
+            }
+          }
+        });
+      }
+
+      // Add element reference to the Surge object
+      $[el.id] = el;
+    });
   }
-  // Add any event listeners based on the data-action attributes
-  function addAction(element){
-    const [event,action] = element.dataset.action.includes("->") ?
-          [element.dataset.action.split("->")[0].trim(),element.dataset.action.split("->")[1].trim()]
-          // default events for certain elements
-          : [element.tagName === "FORM" ? "submit" 
-              : element.tagName === "INPUT" && element.type !== "submit" || element.tagName === "TEXTAREA" ? "input"
-              : element.tagName == "SELECT" ? "change"
-              : "click"
-              ,element.dataset.action]
-              element.addEventListener(event,e => {
-                $.preventDefault = e.preventDefault
-                $.target = e.target
-                actions[action]($,e)
-              })
+
+  // Process newly added elements for event listeners and surge properties
+  function processChild(child) {
+    if (child.id) addToSurge(child);
+    if (child.dataset.action) addAction(child);
+
+    // Handle any nested elements
+    child.querySelectorAll("[id]").forEach(addToSurge);
+    child.querySelectorAll("[data-action]").forEach(addAction);
   }
+
+  // Add event listener for actions using event delegation
+  function addAction(element) {
+    const [event, action] = element.dataset.action.includes("->")
+      ? element.dataset.action.split("->").map(part => part.trim())
+      : [getDefaultEvent(element), element.dataset.action];
+
+    element.addEventListener(event, (e) => {
+      $.preventDefault = e.preventDefault;
+      $.target = e.target;
+      if (actions[action]) actions[action]($, e);
+    });
+  }
+
+  // Determine default event for element if not explicitly specified
+  const getDefaultEvent = element =>
+    element.tagName === "FORM" ? "submit"
+    : element.tagName === "INPUT" && element.type !== "submit" ? "input"
+    : element.tagName === "TEXTAREA" ? "input"
+    : element.tagName === "SELECT" ? "change"
+    : "click"
 }
 export default surge

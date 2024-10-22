@@ -6,6 +6,8 @@ Surge is a tiny library that adds reactivity to your HTML.
 
 It has no dependencies and is unbelievably small (~0.8kb)!
 
+Surge allows you to write reactive applications with a minimal amount of code in any coding style.
+
 # Hello Surge
 
 ## 1. Write Some HTML
@@ -34,7 +36,7 @@ surge({
     greet: $ => $.output.value = $.name.value
 })
 ```
-That's it!
+## 3. That's it, there is no Step 3!!
 
 ![Hello Surge!](https://github.com/daz4126/surge/assets/16646/96c7fadf-6b1f-43e2-a80f-980d953e9933)
 
@@ -151,11 +153,7 @@ Our new button has an id of "btn2" and a `data-amount` attribute set to 2. This 
 
 ```javascript
 surge({
-<<<<<<< HEAD
-    increment: $ => $.count.value += $.target.amount || 1
-=======
     increment: ($,e) => $.count.value += $[e.target.id].amount || 1
->>>>>>> 3825909dddd8e7a963acab830cde675730faf651
 })
 ```
 
@@ -244,7 +242,7 @@ highlight: $ => {
 }
 ```
 
-The Surge object, `$`, is effectively a global object of the app, so is perfect for managing shared state that you want to share around the whole app.
+The Surge object, `$`, is effectively a global object of the app and is available to every action, so is perfect for managing shared state that you want to share around the whole app.
 
 You can add properites directly to the Surge object using the dot notation:
 
@@ -262,7 +260,7 @@ $.state.username = "Ada"
 
 The key thing to remember is that the Surge object acts just like a regular object and is available in every action.
 
-** See the Stopwatch example below for this technique being used to keep track of whether the clock is ticking **
+**See the Stopwatch example below for this technique being used to keep track of whether the clock is ticking**
 
 # Examples
 

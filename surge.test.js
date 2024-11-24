@@ -1,73 +1,113 @@
+/**
+ * @jest-environment node
+ */
+
 import { JSDOM } from "jsdom";
 import { expect, jest } from "@jest/globals";
-import surge from "./surge"
+import surge from "./surge";
 
-// Mock HTML structure for testing
-const html = `
-  <div data-surge>
-    <div id="testElement" data-test="testValue" data-action="testAction"></div>
-    <input id="inputElement" type="text" data-action="inputAction" />
-    <form id="formElement" data-action="formAction"></form>
-  </div>
-`;
+describe('Surge Library', () => {
+  let container;
 
-describe('surge function', () => {
-  let document;
-  let actions;
-
+  // Setup DOM before each test
   beforeEach(() => {
-    // Setup jsdom
-    const dom = new JSDOM(html);
-    document = dom.window.document;
-    console.log("dom: ", dom)
-    console.log("document: ", document)
+    // Reset localStorage for each test
+    localStorage.clear();
 
+    // Setup HTML container for the test
+    container = document.createElement('div');
+    container.setAttribute('data-surge', '');
+    container.innerHTML = `
+      <div id="testElement" data-example="42"></div>
+      <button id="actionButton" data-action="increment">Increment</button>
+      <span id="counter" data-reaction="counter">0</span>
+    `;
+    document.body.appendChild(container);
+  });
+
+  // Cleanup DOM after each test
+  afterEach(() => {
+    document.body.removeChild(container);
+  });
+
+  it('should initialize elements with data attributes', () => {
     // Define actions
-    actions = {
-      testAction: jest.fn($ => $.testElement.value = 29),
-      inputAction: jest.fn(),
-      formAction: jest.fn(),
-      connect: jest.fn(),
+    const actions = {
+      initialize: $ => {
+        expect($.testElement).toBeDefined();
+        expect($.testElement.example).toBe(42);
+      }
     };
-
-    // Execute the surge function
+    
+    // Call surge
     surge(actions);
   });
 
-  test('should add elements with id to the $ object', () => {
-    expect(actions.connect).toHaveBeenCalled();
-    const $ = actions.connect.mock.calls[0][0];
-    console.log($)
-    expect($['testElement']).toBeDefined();
-    expect($['inputElement']).toBeDefined();
-    expect($['formElement']).toBeDefined();
+  it('should update DOM when reactive properties change', () => {
+    const actions = {};
+    surge(actions);
+
+    // Access and modify the reactive property
+    const testElement = document.getElementById('testElement');
+    testElement.example = 100;
+
+    // Check if the element's attribute has updated
+    expect(testElement.dataset.example).toBe("100");
   });
 
-  test('should call action functions on event trigger', () => {
-    document.getElementById('testElement').click();
-    expect(actions.testAction).toHaveBeenCalled();
+  it('should correctly handle actions on elements with data-action', () => {
+    // Define actions to increment the counter
+    const actions = {
+      increment: $ => $.counter.value++
+    };
+    surge(actions);
 
-    const inputElement = document.getElementById('inputElement');
-    inputElement.value = "new value";
-    inputElement.dispatchEvent(new Event('input'));
-    expect(actions.inputAction).toHaveBeenCalled();
+    const actionButton = document.getElementById('actionButton');
+    const counter = document.getElementById('counter');
 
-    const formElement = document.getElementById('formElement');
-    formElement.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-    expect(actions.formAction).toHaveBeenCalled();
+    // Simulate button click
+    actionButton.click();
+
+    // Verify counter has incremented
+    expect(counter.textContent).toBe("1");
   });
 
-  test('should allow setting and getting data attributes as properties', () => {
-    const el = document.getElementById('testElement');
-    expect(el.test).toBe('testValue');
-    el.test = 'newValue';
-    expect(el.getAttribute('data-test')).toBe('newValue');
+  it('should store and retrieve values from localStorage', () => {
+    // Set localStorage key in the container
+    container.setAttribute('data-local-storage', 'surgeTest');
+
+    const actions = {
+      initialize: $ => {
+        $.testElement.value = "Persisted Value";
+      }
+    };
+    surge(actions);
+
+    // Retrieve from localStorage
+    const storedValue = JSON.parse(localStorage.getItem('surgeTest-testElement'));
+    expect(storedValue).toBe("Persisted Value");
   });
 
-  test('should allow setting and getting reactive value property', () => {
-    const el = document.getElementById('testElement');
-    el.value = 'new content';
-    expect(el.textContent).toBe('new content');
-    expect(el.value).toBe('new content');
+  it('should add actions and bindings to dynamically added elements', () => {
+    const actions = {
+      increment: $ => $.dynamicCounter.value++
+    };
+    surge(actions);
+
+    // Dynamically add new content
+    const newContent = document.createElement('div');
+    newContent.innerHTML = `
+      <span id="dynamicCounter" data-reaction="counter">0</span>
+      <button data-action="increment">+</button>
+    `;
+    document.body.appendChild(newContent);
+
+    // Simulate button click
+    const button = newContent.querySelector('[data-action="increment"]');
+    button.click();
+
+    // Verify counter has incremented
+    const counter = document.getElementById('dynamicCounter');
+    expect(counter.textContent).toBe("1");
   });
 });

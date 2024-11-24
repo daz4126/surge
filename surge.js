@@ -1,31 +1,27 @@
 function surge(actions = {}) {
-  // Initialize the surge object
-  const $ = {};
-
-  // Cache DOM queries
+  const $ = { element: {} };
   const surgeContainer = document.querySelector("[data-surge]");
   if (!surgeContainer) return;
-
+  const getEvent = el => ({ FORM: "submit", INPUT: "input", TEXTAREA: "input", SELECT: "change" })[el.tagName] || "click";
   const localStorageKey = surgeContainer.dataset.localStorage || null;
-
-  // Cache all elements with ID and/or data-action
-  const elementsWithId = surgeContainer.querySelectorAll("[id]");
-  const elementsWithAction = surgeContainer.querySelectorAll("[data-action]");
-
+surgeContainer.querySelectorAll("[id], [data-action], [data-bind]").forEach(el => {
+    if (el.id) initializeElement(el);
+    if (el.dataset.action) addAction(el);
+    if (el.dataset.bind) bindElement(el);
+  });
   // Apply local storage data and initialize elements with IDs
-  elementsWithId.forEach(el => {
+  function initializeElement(el) {
     if (localStorageKey && localStorage.getItem(`${localStorageKey}-${el.id}`)) {
       el.textContent = JSON.parse(localStorage.getItem(`${localStorageKey}-${el.id}`));
     }
     addToSurge(el);
-  });
-
-  // Initialize elements with actions
-  elementsWithAction.forEach(el => addAction(el));
-
+  };
+  // Add data bindings
+ function bindElement(element){
+     element.addEventListener("input",e => $[element.dataset.bind] = parseInput(e.target.value))
+  };
   // Run the initialize action if it exists
-  if (actions.initialize) actions.initialize($);
-
+  if (actions.init) actions.init($);
   // Surgify an element to be a prop of the Surge object
   function addToSurge(el) {
     // Use requestAnimationFrame to batch DOM manipulations
@@ -37,7 +33,6 @@ function surge(actions = {}) {
         el[position] = (html) => {
           const template = document.createElement("template");
           template.innerHTML = typeof html === "object" ? html.outerHTML : html;
-
           requestAnimationFrame(() => {
             Array.from(template.content.children).forEach(child => {
               originalFn(child);
@@ -46,90 +41,51 @@ function surge(actions = {}) {
           });
         };
       });
-
-      // Create reactive data binding for element
-      Object.entries(el.dataset).forEach(([key, value]) => {
-        if (key !== "action" && key !== "target") {
-          Object.defineProperty(el, key, {
-            configurable: true,
-            get() {
-              const val = el.dataset[key];
-              try {
-                return JSON.parse(val);
-              } catch {
-                return val;
-              }
-            },
-            set: function(value) {
-              try {
-                JSON.parse(value)
-                el.setAttribute("data-"+key,JSON.stringify(value))
-              } catch (e) {
-                 el.setAttribute("data-"+key,value)
-              }
-            }
-          });
-        }
-      });
-
       // Set up reactive `value` property for non-input elements
       if (el.tagName !== "INPUT") {
-        Object.defineProperty(el, "value", {
+        Object.defineProperty($, el.id, {
           get() {
             const targetEl = document.getElementById(el.dataset.target);
             const val = targetEl ? targetEl.textContent : el.textContent;
-            try {
-              return JSON.parse(val);
-            } catch {
-              return val;
-            }
+            return parseInput(val);
           },
           set(value) {
             const targetEl = document.getElementById(el.dataset.target);
             if (targetEl) targetEl.textContent = value;
             else el.textContent = value;
-
-            if (localStorageKey && !targetEl.dataset.noLocalStorage) {
+            if (localStorageKey) {
               localStorage.setItem(`${localStorageKey}-${el.dataset.target || el.id}`, value);
             }
           }
         });
       }
-
       // Add element reference to the Surge object
-      $[el.id] = el;
-    });
+      $.element[el.id] = el;
+    });   
   }
-
   // Process newly added elements for event listeners and surge properties
   function processChild(child) {
     if (child.id) addToSurge(child);
     if (child.dataset.action) addAction(child);
-
     // Handle any nested elements
     child.querySelectorAll("[id]").forEach(addToSurge);
     child.querySelectorAll("[data-action]").forEach(addAction);
   }
-
   // Add event listener for actions using event delegation
   function addAction(element) {
     const [event, action] = element.dataset.action.includes("->")
       ? element.dataset.action.split("->").map(part => part.trim())
-      : [getDefaultEvent(element), element.dataset.action];
-
+      : [getEvent(element), element.dataset.action];
+      const [method, args] = [action.split(',')[0],action.split(',')[1]?.split(",").map(value => parseInput(value))];
     element.addEventListener(event, (e) => {
-      $.preventDefault = e.preventDefault;
+      if(element.dataset.default == null) e.preventDefault();
       $.target = e.target;
-      if (actions[action]) actions[action]($, e);
+      if (actions[method]) args ? actions[method](...args)($, e) : actions[method]($, e);
     });
   }
-
-  // Determine default event for element if not explicitly specified
-  const getDefaultEvent = element =>
-    element.tagName === "FORM" ? "submit"
-    : element.tagName === "INPUT" && element.type !== "submit" ? "input"
-    : element.tagName === "TEXTAREA" ? "input"
-    : element.tagName === "SELECT" ? "change"
-    : "click"
+  function parseInput(value) {
+    try { return JSON.parse(value); } 
+    catch { return value; }
+  }
 }
 export default surge

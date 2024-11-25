@@ -111,20 +111,20 @@ function enhanceDomManipulation(el) {
   function updateCalculations(reaction) {
     calcs.filter(calc => calc.reactions.includes(reaction)  || calc.reactions.includes(undefined)).forEach(calc => calc.func($));
   }
+}
 
-  function getEvent(el) {
-    return ({ FORM: "submit", INPUT: "input", TEXTAREA: "input", SELECT: "change" }[el.tagName] || "click");
-  }
-  
-  function parseAction(action) {
-    const [method, rawArgs] = action.split(",", 2);
-    const args = rawArgs ? rawArgs.split(",").map(parseInput) : [];
-    return [method.trim(), args];
-  }
-  
-  function parseInput(value) {
-    try { return JSON.parse(value);} 
-    catch { return value;}
-  }
+function getEvent(el) {
+  return ({ FORM: "submit", INPUT: "input", TEXTAREA: "input", SELECT: "change" }[el.tagName] || "click");
+}
+
+function parseAction(action) {
+  const [method, rawArgs] = action.split(",", 2);
+  const args = rawArgs ? rawArgs.split(",").map(parseInput) : [];
+  return [method.trim(), args];
+}
+
+function parseInput(value) {
+  try { return JSON.parse(value);} 
+  catch { return value;}
 }
 export default surge

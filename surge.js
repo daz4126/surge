@@ -118,9 +118,10 @@ function surge(actions = {}) {
   }
   
   function parseAction(action) {
-    const [method, rawArgs] = action.split(",", 2);
-    const args = rawArgs ? rawArgs.split(",").map(parseInput) : [];
-    return [method.trim(), args];
+    const match = action.match(/^(\w+)\((.*)\)$/);
+    const method = match ? match[1].trim() : action;
+    const args = match ? match[2] ? match[2].split(",").map(arg => parseInput(arg.trim())) : [undefined] : null;
+    return [method, args];
   }
   
   function parseInput(value) {

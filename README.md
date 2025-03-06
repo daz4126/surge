@@ -12,10 +12,6 @@ Surge allows you to write reactive applications with a minimal amount of code in
 
 ## 1. Write Some HTML
 
-* Add a `data-surge` attribute to the container element that you want to add reactivity to
-* Add a `data-action` attribute to any element that performs an action
-* Add an `data-value` attribute to any elements that will contain reactive values
-
 ```html
 <div data-surge>
   <input data-element="name" type="text" placeholder="Enter your name">
@@ -25,10 +21,6 @@ Surge allows you to write reactive applications with a minimal amount of code in
 ```
 
 ## 2. Add Some JS
-
-* Pass the actions referenced in any `data-action` attributes to the `surge` function
-* Use the *Surge object* (`$`) to access any elements with a `data-name` attribute and any values with a `data-value` attribute 
-* Update any values as if they were regular variables
 
 ```javascript
 surge({
@@ -43,7 +35,6 @@ You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 
 Surge was inspired by the brilliant [Stimulus](https://stimulus.hotwired.dev) library.
 
-# Reference
 
 ## Installation
 

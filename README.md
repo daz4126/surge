@@ -14,11 +14,11 @@ Surge allows you to write reactive applications with a minimal amount of code in
 
 * Add a `data-surge` attribute to the container element that you want to add reactivity to
 * Add a `data-action` attribute to any element that performs an action
-* Add an `id` attribute to any elements that will contain reactive content
+* Add an `data-value` attribute to any elements that will contain reactive values
 
 ```html
 <div data-surge>
-  <input id="name" type="text" placeholder="Enter your name">
+  <input data-element="name" type="text" placeholder="Enter your name">
   <button data-action="greet">Greet</button>
   <h1>Hello <strong id="output">World</strong></h1>
 </div>
@@ -26,14 +26,13 @@ Surge allows you to write reactive applications with a minimal amount of code in
 
 ## 2. Add Some JS
 
-* Define the actions referenced in any `data-action` attributes
-* Use the *Surge object* (`$`) to access any elements with an `id`
-* Use the `value` property to update the text content of an element
-* Pass the actions object to the `surge` function in the JavaScript:
+* Pass the actions referenced in any `data-action` attributes to the `surge` function
+* Use the *Surge object* (`$`) to access any elements with a `data-name` attribute and any values with a `data-value` attribute 
+* Update any values as if they were regular variables
 
 ```javascript
 surge({
-    greet: $ => $.output.value = $.name.value
+    greet: $ => $.output = $.name.value
 })
 ```
 ## 3. That's it, there is no Step 3!!
@@ -75,25 +74,25 @@ Let's look at a simple example to illustrate how it works.
 We'll make a little counter app that tracks how many times a button has been pressed.
 
 ```html
-<div>
+<main data-surge>
   <button>Pressed <span>0</span> times</button>
-</div>
+</main>
 ```
 
 First, we need to add a `data-surge` attribute to the container element to identify that we're using Surge:
 
 ```html
-<div data-surge>
+<main data-surge>
   <button>Pressed <span>0</span> times</button>
-</div>
+</main>
 ```
 
 Next we need to add a `data-action` attribute to the button. This tells Surge what action to run when the button is pressed. These take the form of `data-action="event->actionName"`:
 
 ```html
-<div data-surge>
+<main data-surge>
   <button data-action="click->increment">Pressed <span>0</span> times</button>
-</div>
+</main>
 ```
 
 This means that when the button is clicked the action called `increment` will be called.
@@ -101,71 +100,76 @@ This means that when the button is clicked the action called `increment` will be
 Buttons have a default event of 'click', so we can omit the reference to it and just write the name of the action:
 
 ```html
-<div data-surge>
+<main data-surge>
   <button data-action="increment">Pressed <span>0</span> times</button>
-</div>
+</main>
 ```
 
-Next we need to associate the value of the count with the `span` element inside the button. To do this we give it an id of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its `value` property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
+Next we need to associate the value of the count with the `span` element inside the button. To do this we give it a `data-value` attribute of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its `value` property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
 
 ```html
-<div data-surge>
-  <button data-action="increment">Pressed <span id="count">0</span> times</button>
-</div>
+<main data-surge>
+  <button data-action="increment">Pressed <span data-value="count">0</span> times</button>
+</main>
 ```
 
-This will mean that the text content of the `span` element starts with a value of `0`. It also means that whenever the `value` property of the count changes, the text content will automatically update and re-render.
+This will add a `count` property to the Surge object, which is the argument of any Surge actions. Changing the value of this propetry will cause the text content to automatically update and re-render.
 
-Now we just need to define our `increment` action in the JavaScript. Actions are basically event handlers and are passed to the `surge` function as an object:
+Now we just need to define our `increment` action in the JavaScript. Actions are similar to event handlers and are passed to the `surge` function as an object:
 
 ```javascript
 surge({
-    increment: ($,e) => $.count.value++
+    increment: ($,e) => $.count++
 })
 ```
-Surge actions are very similar to event listeners. They have two parameters - the *Surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event handler, but the Surge object has some extra methods that can be used to access and update the elements that have been marked with an id attribute.
+Surge actions have two parameters - the *Surge object*, `$`, and the event object, `e`. The event object is exactly the same as any event handler and the Surge object has some methods that can be used to access and update the elements that have been marked with an `data-element` and `data-value` attributes. In the example above `$.count` refers to the value contained in the span element that has the `data-value` attribute and can be treated just like a normal JavaScript variable, so using the increment operator, `++`, will increase its value by 1. Any changes will automatically update the text content of the element with the new value, so every time the button is pressed, the next number will be displayed.
 
-Note that in the example above, we don't use the event object, so we can omit it from the action definition:
+Note that in the example above, we don't actually use the event object, so we can omit it from the action definition:
 
 ```javascript
 surge({
-    increment: $ => $.count.value++
+    increment: $ => $.count++
 })
 ```
 
-The Surge object can access any element with an id, by referencing the id as a propety. So in the example above `$.count` refers to the element with an id of "count" (the `span` element).
-
-Any element references also have access to any values set using `data` attributes. The text content of the element can be accessed using the `value` property. So in the example abvove `$.count.value` has an initial value of `0`. This value can then be updated just like any othe variable, so using the increment operator, `++`, will increase its value by 1. Any changes will automatically update the text content of the element with the new value, so every time the button is pressed, the next number will be displayed.
-
-Other values can be set using the `data` attribute. These values will be name-spaced to the element they are set on and can be accessed by the surge object (as long as they element they are set on is given an id).
-
-This is useful if you want to set a parameter for actions in the HTML. For example, let's change the example so that it uses two buttons that both use the same action to increase the count that is stored in a `h1` element:
+We can make actions more generic by adding parameters to them. These are added inside parentheses inside the `data-action` value
 
 ```html
-<div data-surge>
-  <button id="btn1" data-action="increment">Increase by 1</button>
-  <button id="btn2" data-action="increment" data-amount=2>Increase by 2</button>
-  <h1 id="count">0</h1>
-</div>
+<main data-surge>
+  <button data-action="increment(1)">Increase by 1</button>
+  <button data-action="increment(2)">Increase by 2</button>
+  <h1 data-value="count">0</h1>
+</main>
 ```
 
-Our new button has an id of "btn2" and a `data-amount` attribute set to 2. This is accessible in actions using `$.btn2.amount`. Notice that we don't need a different action, we just use the `increment` action again. We need to also add an id of "btn1" to our original button and then just need to update it to take account of the amount:
+Actions that accept parameters need to have an extra parameter added to the function using a curried form of 'double arrow function', for example, we can add the parameter `n` which represents the amount to increment by to the `increment` action like this:
 
 ```javascript
 surge({
-    increment: ($,e) => $.count.value += $[e.target.id].amount || 1
+    increment: n => $ => $.count += n
 })
 ```
 
-This uses the event object's `target` property to find the id of the element that was clicked on. We then use the surge object to access the `amount` value. If this isn't set, we default to a value of 1.
+This will now pass the parameter from the action into the function and increment the value of `count` by this amount.
 
-Because the `event.target` property is used so often, it is aliased inside the Surge object, so the code above can be simplified as:
+We can set a default value of `1` in the usual way:
 
 ```javascript
 surge({
-    increment: $ => $.count.value += $.target.amount || 1
+    increment: (n=1) => $ => $.count += n
 })
 ```
+
+Note that the parentheses are still required in the `data-action` value to indicate that this is an action that accepts parentheses:
+
+```html
+<main data-surge>
+  <button data-action="increment()">Increase by 1</button>
+  <button data-action="increment(2)">Increase by 2</button>
+  <h1 data-value="count">0</h1>
+</main>
+```
+
 
 This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 

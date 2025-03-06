@@ -173,11 +173,43 @@ Note that the parentheses are still required in the `data-action` value to indic
 
 This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
-### The `connect` action
+### Data Attributes
 
-The `connect` action will run once after the HTML loads and the surge function connects to it. This is useful for any setup code that needs running.
+#### `data-surge`
 
-The `connect` action is **not** an event listener so only accepts the Surge object as it's only argument, for example:
+Signifies the start of a Surge block of code, any Surge code will only apply to anything inside this container.
+
+#### `data-element`
+
+Any element with this attribute will be accessible as a property of the surge object
+
+```html
+<h1 data-element="title">Hello Surge</h1>
+```
+
+This element would then be accessible inside a Surge action as:
+
+```javascript
+$.title
+```
+
+(yes, it has jQuery vibes....)
+
+#### `data-value`
+
+Used to create reactive values.
+
+#### `data-action`
+#### `data-calculate`
+#### `data-bind`
+#### `data-default`
+#### `data-foo`
+
+### The `initalize` action
+
+The `initialize` action will run once after the HTML loads. This is useful for any setup code that needs running.
+
+The `initialize` action is **not** an event listener so only accepts the Surge object as it's only argument, for example:
 
 ```javascript
 connect: $ => {

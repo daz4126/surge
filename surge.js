@@ -96,6 +96,7 @@ function surge(actions = {}) {
       const val = el.dataset.value;  
       calcs.forEach(calc =>{
         const func = actions[calc];
+        if(!func) return
         const existingCalc = calculations.find(c => c.func === func);
         if (existingCalc) {
           existingCalc.values.push(val);

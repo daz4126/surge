@@ -1,10 +1,10 @@
 function surge(actions = {}) {
-  const $ = {};
+  const elements = {};
+  const $ = key => elements[key];
   const surgeContainer = document.querySelector("[data-surge]");
   if (!surgeContainer) return;
   const localStorageKey = surgeContainer.dataset.localStorage || null;
 
-  // Process all elements
   surgeContainer.querySelectorAll("[data-surge] [data-element],[data-surge] [data-value],[data-surge] [data-action],[data-surge] [data-bind]").forEach(processElement);
 
   // Initialize calcs
@@ -12,7 +12,6 @@ function surge(actions = {}) {
   // Call the initialize action if it exists
   if (actions.init) actions.init($);
 
-  // Process a single element
   function processElement(el) {
     if (el.dataset.value) initializeElement(el);
     if (el.dataset.element) addToSurge(el);
@@ -29,31 +28,31 @@ function surge(actions = {}) {
   }
 
   function addToSurge(el) {
-    $[el.dataset.element] = el;
+    elements[el.dataset.element] = el;
     Object.keys(el.dataset).forEach(key => {
-      Object.defineProperty($[el.dataset.element], key, {
+      Object.defineProperty(elements[el.dataset.element], key, {
         get: () => parseInput(el.dataset[key]),
         set: value => (el.dataset[key] = value),
       });
     });
     enhanceDomManipulation(el);
-}
+  }
 
-function enhanceDomManipulation(el) {
-  ["append", "prepend", "before", "after", "replace"].forEach(m => {
-    const method = m === "replace" ? "replaceAt" : m;
-    const originalFn = el[method].bind(el);
-    el[method] = html => {
-      const template = document.createElement("template");
-      template.innerHTML = typeof html === "object" ? html.outerHTML : html;
-    Array.from(template.content.children).forEach(child => {
-      originalFn(child);
-      processElement(child);
-      child.querySelectorAll("[id], [data-value], [data-action], [data-bind]").forEach(processElement);
-      });
-    };
-  });
-}
+  function enhanceDomManipulation(el) {
+    ["append", "prepend", "before", "after", "replace"].forEach(m => {
+      const method = m === "replace" ? "replaceWith" : m;
+      const originalFn = el[method].bind(el);
+      el[method] = html => {
+        const template = document.createElement("template");
+        template.innerHTML = typeof html === "object" ? html.outerHTML : html;
+      Array.from(template.content.children).forEach(child => {
+        originalFn(child);
+        processElement(child);
+        child.querySelectorAll("[data-element], [data-value], [data-action], [data-bind]").forEach(processElement);
+        });
+      };
+    });
+  }
 
   function createReactiveBinding(el) {
     const prop = el.dataset.value;
@@ -86,7 +85,6 @@ function enhanceDomManipulation(el) {
     const [method, args] = parseAction(action);
     el.addEventListener(event, (e) => {
       if(el.dataset.default == null) e.preventDefault();
-      $.target = e.target;
       if (actions[method]) Array.isArray(args) ? actions[method](...args)($, e) : actions[method]($, e);
     });
   }
@@ -110,9 +108,9 @@ function enhanceDomManipulation(el) {
   }
 
   function updateCalculations(value) {
-    calcs.filter(calc => calc.values.includes(value)  || calc.values.includes(undefined)).forEach(calc => calc.func($));
+      calcs.filter(calc => calc.values.includes(value)  || calc.values.includes(undefined)).forEach(calc => calc.func($));
+    }
   }
-}
 
 function getEvent(el) {
   return ({ FORM: "submit", INPUT: "input", TEXTAREA: "input", SELECT: "change" }[el.tagName] || "click");
@@ -121,7 +119,6 @@ function getEvent(el) {
 function parseAction(action) {
   const match = action.match(/^(\w+)\((.*)\)$/);
   const method = match ? match[1].trim() : action;
-  console.log(method)
   const args = match ? match[2] ? match[2].split(",").map(arg => parseInput(arg.trim())) : [undefined] : null;
   return [method, args];
 }

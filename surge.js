@@ -4,19 +4,15 @@ function surge(actions = {}) {
   const surgeContainer = document.querySelector("[data-surge]");
   if (!surgeContainer) return;
   const localStorageKey = surgeContainer.dataset.localStorage || null;
-
-  surgeContainer.querySelectorAll("[data-surge] [data-element],[data-surge] [data-value],[data-surge] [data-action],[data-surge] [data-bind]").forEach(processElement);
-
-  // Initialize calcs
+  processElement(surgeContainer);
   const calcs = initializeCalcs();
-  // Call the initialize action if it exists
-  if (actions.init) actions.init($);
-
+  
   function processElement(el) {
     if (el.dataset.value) initializeElement(el);
     if (el.dataset.element) addToSurge(el);
     if (el.dataset.action) bindAction(el);
     if (el.dataset.bind) bindBinding(el);
+    el.querySelectorAll("[data-element], [data-value], [data-action], [data-bind]").forEach(processElement);
   }
 
   function initializeElement(el) {
@@ -48,7 +44,6 @@ function surge(actions = {}) {
       Array.from(template.content.children).forEach(child => {
         originalFn(child);
         processElement(child);
-        child.querySelectorAll("[data-element], [data-value], [data-action], [data-bind]").forEach(processElement);
         });
       };
     });
@@ -59,6 +54,7 @@ function surge(actions = {}) {
     if (!prop) return;
     // Define a reactive property
     Object.defineProperty($, prop, {
+      configurable: true,
       get() { return parseInput(el.textContent); },
       set(value) {
         el.textContent = value;
@@ -96,7 +92,7 @@ function surge(actions = {}) {
       const val = el.dataset.value;  
       calcs.forEach(calc =>{
         const func = actions[calc];
-        if(!func) return
+        if(!func) return;
         const existingCalc = calculations.find(c => c.func === func);
         if (existingCalc) {
           existingCalc.values.push(val);
@@ -111,7 +107,9 @@ function surge(actions = {}) {
   function updateCalculations(value) {
       calcs.filter(calc => calc.values.includes(value)  || calc.values.includes(undefined)).forEach(calc => calc.func($));
     }
-  }
+  // Call the initialize action if it exists
+  if (actions.init) actions.init($);
+}
 
 function getEvent(el) {
   return ({ FORM: "submit", INPUT: "input", TEXTAREA: "input", SELECT: "change" }[el.tagName] || "click");

@@ -2,13 +2,36 @@
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
-Surge is a tiny library that adds reactivity to your HTML. 
+The tiny JavaScript library that adds a surge of reactivity to your HTML.
 
-It has no dependencies and is unbelievably small (~0.8kb)!
+Surge is a tiny, ultra-lightweight JavaScript library that adds seamless reactivity to your HTML — all in just 1kb (minified and gzipped). 
 
-Surge allows you to write reactive applications with a minimal amount of code in any coding style.
+No virtual DOM. No build step. No dependencies. Just drop it in and go.
 
-# Hello Surge
+Ever wonder why it takes 50kb of JavaScript, a virtual DOM, and a mountain of boilerplate just to build a counter?
+
+With Surge, it doesn’t.
+
+Surge embraces the simplicity of the web and the power of HTML-first development. It supercharges your HTML with a sprinkle of declarative magic using data-* attributes — no JSX, no diffing and no dependencies.
+
+No JSX. No templates to compile. No diffing engine.
+Just clean, semantic HTML — with a surge of reactiviey.
+
+Surge works with the browser, not against it. HTML is your template. JavaScript is your logic. Surge brings them together and then gets out of your way. You don’t write components or compile templates. You write HTML, sprinkle in a few data-* attributes, and let Surge handle the rest.
+
+⚡️ Two-way binding — Update your data or your UI, and both stay in sync
+⚡️ Action binding with parameters — Easily wire logic to events like click, input, or submit
+⚡️ LocalStorage support — Persist state with zero config
+⚡️ Reactive HTML insertion — Dynamically add content and Surge wires it up automatically
+
+Surge doesn't fight the browser — it works with it. HTML is your template and JavaScript is your logic. Surge brings them together in a powerful way then gets out of your way to let you build. And it's so small you'll hardly even know it's there.
+
+Surge is built with simplicity in mind. Whether you’re prototyping, enhancing a static site, or building a micro-app, Surge gives you the power to be productive — without the weight of a full framework.
+
+You don’t need a build step and complicated compilation pipeline to build something great. You just need HTML, a bit of JavaScript and Surge.
+
+
+# Shopping Cart Example
 
 ## 1. Write Some HTML
 

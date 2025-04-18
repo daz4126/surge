@@ -38,7 +38,7 @@ function surge(actions = {}) {
     ["append", "prepend", "before", "after", "replace"].forEach(m => {
       const method = m === "replace" ? "replaceWith" : m;
       const originalFn = el[method].bind(el);
-      el[method] = html => {
+      el[m] = html => {
         const template = document.createElement("template");
         template.innerHTML = typeof html === "object" ? html.outerHTML : html;
       Array.from(template.content.children).forEach(child => {

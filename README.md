@@ -2,9 +2,7 @@
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
-The tiny JavaScript library that adds a surge of reactivity to your HTML.
-
-Surge is a tiny, ultra-lightweight JavaScript library that adds seamless reactivity to your HTML — all in just 1kb (minified and gzipped). 
+Surge is a tiny, ultra-lightweight JavaScript library that adds a surge of reactivity to your HTML — all in just 1kb (minified and gzipped). 
 
 No virtual DOM. No build step. No dependencies. Just drop it in and go.
 
@@ -12,12 +10,7 @@ Ever wonder why it takes 50kb of JavaScript, a virtual DOM, and a mountain of bo
 
 With Surge, it doesn’t.
 
-Surge embraces the simplicity of the web and the power of HTML-first development. It supercharges your HTML with a sprinkle of declarative magic using data-* attributes — no JSX, no diffing and no dependencies.
-
-No JSX. No templates to compile. No diffing engine.
-Just clean, semantic HTML — with a surge of reactiviey.
-
-Surge works with the browser, not against it. HTML is your template. JavaScript is your logic. Surge brings them together and then gets out of your way. You don’t write components or compile templates. You write HTML, sprinkle in a few data-* attributes, and let Surge handle the rest.
+Surge embraces the simplicity of the web and the power of HTML-first development. It supercharges your HTML with a sprinkle of declarative magic using `data-*` attributes — no JSX, no diffing and no dependencies. Just clean, semantic HTML — with a surge of reactiviey.
 
 ⚡️ Two-way binding — Update your data or your UI, and both stay in sync
 ⚡️ Action binding with parameters — Easily wire logic to events like click, input, or submit
@@ -28,10 +21,40 @@ Surge doesn't fight the browser — it works with it. HTML is your template and 
 
 Surge is built with simplicity in mind. Whether you’re prototyping, enhancing a static site, or building a micro-app, Surge gives you the power to be productive — without the weight of a full framework.
 
-You don’t need a build step and complicated compilation pipeline to build something great. You just need HTML, a bit of JavaScript and Surge.
+## Shopping Cart Example
 
+Here's an example that shows off a number of Surge's features:
 
-# Shopping Cart Example
+```HTML
+<div data-surge data-local-storage="surge-cart">
+  <h1>🛒 Shopping Cart</h1>
+  <p>How many basketballs do you want to buy for $<span data-value="unitPrice">4.99</span> each?
+  <p hidden>Items in cart: <span data-value="count" data-calculate="updatePrice">0</span></p>
+
+  <button data-action="increment(-1)">-</button>
+  <button data-action="increment()">+</button>
+
+  <div data-value="basket"></div>
+    <p>Total: $<span data-value="total">0</span></p>
+
+    <label>
+    price per ball:
+    <input type="number" step="0.01" value="4.99" data-bind="unitPrice" />
+  </label>
+</div>
+```
+
+```javascript
+  surge({
+    increment: (n=1) => $ => {
+      $.count += n
+      $.basket = "🏀".repeat($.count)
+    },
+    updatePrice: $ => {
+      $.total = ($.total + $.unitPrice).toFixed(2)
+    }
+  });
+```
 
 ## 1. Write Some HTML
 

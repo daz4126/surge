@@ -10,7 +10,9 @@ No virtual DOM. No build step. No dependencies. Just drop it in and go.
 
 Surge embraces the simplicity of the web and the power of HTML-first development. It supercharges your HTML with a sprinkle of declarative magic using `data-*` attributes — no JSX, no diffing and no dependencies. Just clean, semantic HTML — with a surge of reactiviey.
 
-## Write Some HTML
+## Quick Start Example
+
+Write some HTML ...
 
 ```html
 <div data-surge>
@@ -20,7 +22,7 @@ Surge embraces the simplicity of the web and the power of HTML-first development
 </div>
 ```
 
-## Add a Surge of Reactivity in the JS
+... then add a Surge of Reactivity in the JS
 
 ```javascript
 surge({

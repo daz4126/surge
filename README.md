@@ -18,7 +18,7 @@ Write some HTML ...
 <div data-surge>
   <input id="name" type="text" placeholder="Enter your name">
   <button data-action="click -> greet">Greet</button>
-  <h1>Hello <strong value="output">World</strong></h1>
+  <h1>Hello <strong data-reaction="output">World</strong></h1>
 </div>
 ```
 
@@ -109,11 +109,11 @@ Buttons have a default event of 'click', so we can omit the reference to it and 
 </main>
 ```
 
-Next we need to associate the value of the count with the `span` element inside the button. To do this we give it a `data-value` attribute of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its `value` property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
+Next we need to associate the value of the count with the `span` element inside the button. To do this we give it a `data-reaction` attribute of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
 
 ```html
 <main data-surge>
-  <button data-action="increment">Pressed <span data-value="count">0</span> times</button>
+  <button data-action="increment">Pressed <span data-reaction="count">0</span> times</button>
 </main>
 ```
 

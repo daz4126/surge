@@ -12,11 +12,11 @@ function surge(actions = {}, templates = {}) {
     if (elements.has(selector)) return elements.get(selector);
 
     const els = surgeContainer.querySelectorAll(selector);
-    if (els.length > 0) {
-      els.forEach((el) => registerElement(el));
-      elements.set(selector, els); // Cache the selector
-    }
-    return els.length === 1 ? els[0] : els;
+    if (els.length < 1) return;
+    els.forEach((el) => registerElement(el));
+    const el = els.length === 1 ? els[0] : els;
+    elements.set(selector, el); // Cache the selector
+    return el;
   };
 
   // Proxy to intercept property access for state

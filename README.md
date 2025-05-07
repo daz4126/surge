@@ -2,24 +2,24 @@
 [![npm](https://img.shields.io/npm/v/@daz4126/surge?color=222222)](https://www.npmjs.com/package/@daz4126/surge)
 [![License](https://img.shields.io/badge/License-Unlicense-222222)](#license)
 
-Surge is a tiny, ultra-lightweight JavaScript library that adds a surge of reactivity to your HTML — all in just 1kb (minified and gzipped). 
+Surge is a tiny, ultra-lightweight JavaScript library that adds a surge of reactivity to your HTML — all in just 1kb (minified and gzipped).
+
+What if you could have an object that behaved like jQuery, but also managed reactive state? With Surge you can!
 
 No virtual DOM. No build step. No dependencies. Just drop it in and go.
 
-Ever wonder why it takes 50kb of JavaScript, a virtual DOM, and a mountain of boilerplate just to build a counter?
-
-With Surge, it doesn’t.
-
 Surge embraces the simplicity of the web and the power of HTML-first development. It supercharges your HTML with a sprinkle of declarative magic using `data-*` attributes — no JSX, no diffing and no dependencies. Just clean, semantic HTML — with a surge of reactiviey.
 
-⚡️ Two-way binding — Update your data or your UI, and both stay in sync
 ⚡️ Action binding with parameters — Easily wire logic to events like click, input, or submit
-⚡️ LocalStorage support — Persist state with zero config
+
 ⚡️ Reactive HTML insertion — Dynamically add content and Surge wires it up automatically
 
-Surge doesn't fight the browser — it works with it. HTML is your template and JavaScript is your logic. Surge brings them together in a powerful way then gets out of your way to let you build. And it's so small you'll hardly even know it's there.
+⚡️ Two-way binding — Update your data or your UI, and both stay in sync
 
-Surge is built with simplicity in mind. Whether you’re prototyping, enhancing a static site, or building a micro-app, Surge gives you the power to be productive — without the weight of a full framework.
+⚡️ LocalStorage support — Persist state with zero config
+
+
+Surge is built with simplicity in mind and works with the browser. HTML is the templating language and vanilla JS is the programming language. Surge  is so small you won't notice it's there, it gets out of your way to let you build, whether you’re prototyping, enhancing a static site, or building a micro-app.
 
 ## Shopping Cart Example
 
@@ -60,9 +60,9 @@ Here's an example that shows off a number of Surge's features:
 
 ```html
 <div data-surge>
-  <input data-element="name" type="text" placeholder="Enter your name">
+  <input id="name" type="text" placeholder="Enter your name">
   <button data-action="greet">Greet</button>
-  <h1>Hello <strong id="output">World</strong></h1>
+  <h1>Hello <strong value="output">World</strong></h1>
 </div>
 ```
 
@@ -70,7 +70,7 @@ Here's an example that shows off a number of Surge's features:
 
 ```javascript
 surge({
-    greet: $ => $.output = $.name.value
+    greet: $ => $.output = $("#name").value
 })
 ```
 ## 3. That's it, there is no Step 3!!
@@ -207,7 +207,6 @@ Note that the parentheses are still required in the `data-action` value to indic
 </main>
 ```
 
-
 This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 
 ### Data Attributes
@@ -215,22 +214,6 @@ This example can be seen [on CodePen](https://codepen.io/daz4126/pen/dyLLpwy).
 #### `data-surge`
 
 Signifies the start of a Surge block of code, any Surge code will only apply to anything inside this container.
-
-#### `data-element`
-
-Any element with this attribute will be accessible as a property of the surge object
-
-```html
-<h1 data-element="title">Hello Surge</h1>
-```
-
-This element would then be accessible inside a Surge action as:
-
-```javascript
-$.title
-```
-
-(yes, it has jQuery vibes....)
 
 #### `data-value`
 
@@ -242,23 +225,27 @@ Used to create reactive values.
 #### `data-default`
 #### `data-foo`
 
-### The `initalize` action
+### The `init` action
 
-The `initialize` action will run once after the HTML loads. This is useful for any setup code that needs running.
+The `init` action will run once after the HTML loads. This is useful for any setup code that needs running.
 
-The `initialize` action is **not** an event listener so only accepts the Surge object as it's only argument, for example:
+The `init` action is **not** an event listener so only accepts the Surge object as it's only argument, for example:
 
 ```javascript
-connect: $ => {
-  console.log("Connected!")
+init: $ => {
+  console.log("Surge has started ...")
 }
 ```
+
+## Accessing Eleemnts
+
+Elements can be accessed using jQuery-style syntax and query selectors.
 
 ## Creating Dynamic Content
 
 Elements that have been added to the Surge object have a number of methods that can be used to add dynamic content. Any content added can also use the 
 
-### `$.element.append`
+### `$(selector).append`
 
 Every element that can be accessed using the Surge object has an `append` method that can be used to append HTML to it. The dynamically added HTML fragment is provided as a string and becomes the last child of the element. For example the following code would append a list item to a list:
 

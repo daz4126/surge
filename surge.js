@@ -1,5 +1,5 @@
 function surge(actions = {}, templates = {}) {
-  const DATA_LIST = "[data-value], [data-bind],[data-template]";
+  const DATA_LIST = "[data-reaction],[data-bind],[data-template]";
   const elements = new Map();
   const bindings = {};
   const state = {};
@@ -11,12 +11,12 @@ function surge(actions = {}, templates = {}) {
   const base = (selector) => {
     if (elements.has(selector)) return elements.get(selector);
 
-    const el = surgeContainer.querySelector(selector);
-    if (el) {
-      registerElement(el);
-      elements.set(selector, el); // Cache the selector
+    const els = surgeContainer.querySelectorAll(selector);
+    if (els.length > 0) {
+      els.forEach((el) => registerElement(el));
+      elements.set(selector, els); // Cache the selector
     }
-    return el;
+    return els.length === 1 ? els[0] : els;
   };
 
   // Proxy to intercept property access for state
@@ -61,12 +61,12 @@ function surge(actions = {}, templates = {}) {
 
   function processElement(el) {
     if (el.dataset.template) initializeTemplate(el);
-    if (el.dataset.value) initializeBinding(el);
+    if (el.dataset.reaction) initializeBinding(el);
     if (el.dataset.bind) bindTwoWay(el);
   }
 
   function initializeBinding(el) {
-    const key = el.dataset.value;
+    const key = el.dataset.reaction;
 
     if (localStorageKey) {
       const stored = localStorage.getItem(`${localStorageKey}-${key}`);
@@ -155,7 +155,7 @@ function surge(actions = {}, templates = {}) {
       )
       .forEach((el) => {
         const calcs = el.dataset.calculate.split(",");
-        const val = el.dataset.value;
+        const val = el.dataset.reaction;
         calcs.forEach((calc) => {
           const func = actions[calc];
           if (!func) return;

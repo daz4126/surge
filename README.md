@@ -10,6 +10,28 @@ No virtual DOM. No build step. No dependencies. Just drop it in and go.
 
 Surge embraces the simplicity of the web and the power of HTML-first development. It supercharges your HTML with a sprinkle of declarative magic using `data-*` attributes — no JSX, no diffing and no dependencies. Just clean, semantic HTML — with a surge of reactiviey.
 
+## Write Some HTML
+
+```html
+<div data-surge>
+  <input id="name" type="text" placeholder="Enter your name">
+  <button data-action="click -> greet">Greet</button>
+  <h1>Hello <strong value="output">World</strong></h1>
+</div>
+```
+
+## Add a Surge of Reactivity in the JS
+
+```javascript
+surge({
+    greet: $ => $.output = $("#name").value
+})
+```
+
+![Hello Surge!](https://github.com/daz4126/surge/assets/16646/96c7fadf-6b1f-43e2-a80f-980d953e9933)
+
+You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
+
 ⚡️ Action binding with parameters — Easily wire logic to events like click, input, or submit
 
 ⚡️ Reactive HTML insertion — Dynamically add content and Surge wires it up automatically
@@ -21,63 +43,6 @@ Surge embraces the simplicity of the web and the power of HTML-first development
 
 Surge is built with simplicity in mind and works with the browser. HTML is the templating language and vanilla JS is the programming language. Surge  is so small you won't notice it's there, it gets out of your way to let you build, whether you’re prototyping, enhancing a static site, or building a micro-app.
 
-## Shopping Cart Example
-
-Here's an example that shows off a number of Surge's features:
-
-```HTML
-<div data-surge data-local-storage="surge-cart">
-  <h1>🛒 Shopping Cart</h1>
-  <p>How many basketballs do you want to buy for $<span data-value="unitPrice">4.99</span> each?
-  <p hidden>Items in cart: <span data-value="count" data-calculate="updatePrice">0</span></p>
-
-  <button data-action="increment(-1)">-</button>
-  <button data-action="increment()">+</button>
-
-  <div data-value="basket"></div>
-    <p>Total: $<span data-value="total">0</span></p>
-
-    <label>
-    price per ball:
-    <input type="number" step="0.01" value="4.99" data-bind="unitPrice" />
-  </label>
-</div>
-```
-
-```javascript
-  surge({
-    increment: (n=1) => $ => {
-      $.count += n
-      $.basket = "🏀".repeat($.count)
-    },
-    updatePrice: $ => {
-      $.total = ($.total + $.unitPrice).toFixed(2)
-    }
-  });
-```
-
-## 1. Write Some HTML
-
-```html
-<div data-surge>
-  <input id="name" type="text" placeholder="Enter your name">
-  <button data-action="greet">Greet</button>
-  <h1>Hello <strong value="output">World</strong></h1>
-</div>
-```
-
-## 2. Add Some JS
-
-```javascript
-surge({
-    greet: $ => $.output = $("#name").value
-})
-```
-## 3. That's it, there is no Step 3!!
-
-![Hello Surge!](https://github.com/daz4126/surge/assets/16646/96c7fadf-6b1f-43e2-a80f-980d953e9933)
-
-You can see a live demo [on CodePen](https://codepen.io/daz4126/pen/oNOVVKJ).
 
 Surge was inspired by the brilliant [Stimulus](https://stimulus.hotwired.dev) library.
 
@@ -237,7 +202,7 @@ init: $ => {
 }
 ```
 
-## Accessing Eleemnts
+## Accessing Elements
 
 Elements can be accessed using jQuery-style syntax and query selectors.
 
@@ -294,10 +259,10 @@ This can then be accessed in the action code:
 
 ```javascript
 highlight: $ => {
-  if($.heading.important){
-    $.heading.style.color = "red"
+  if($("#heading).important){
+    $("#heading).style.color = "red"
   } else {
-    $.heading.style.color = "yellow"
+    $("#heading).style.color = "yellow"
   }
 }
 ```
@@ -334,7 +299,7 @@ Have a look at the examples below to see how Surge can be used to create a varie
 #### HTML:
 ```html
 <main data-surge>
-  <h1>❤️ <strong id="count">0</strong></h1>
+  <h1>❤️ <strong data-value="count">0</strong></h1>
   <button data-action="increment">👍</button>
   <button data-action="decrement">👎</button>
 </main>
@@ -360,7 +325,7 @@ surge({
   <textarea data-action="count"></textarea>
   <p>
     There are
-    <strong id="count">0</strong> characters in this textarea.
+    <strong data-value="count">0</strong> characters in this textarea.
   </p>
 </main>
 ```
@@ -382,7 +347,7 @@ surge({
 ```html
 <main data-surge>
   <h2>BMI Calculator</h2>
-  <h2>BMI: <strong id="bmi">25</strong></h2>
+  <h2>BMI: <strong data-value="bmi">25</strong></h2>
   <label>Weight (kg):</label>
   <input type="range" min=0 max=150 data-action="update" data-target="weight" value=45>
   <h2 id="weight">75</h2>
@@ -396,8 +361,8 @@ surge({
 ```javascript
 surge({
   update: $ => {
-    $[$.target.dataset.target].value = $.target.value
-    $.bmi.value = ($.weight.value / ($.height.value/100)**2).toFixed(1)
+    $[$.target.dataset.target] = $.target
+    $.bmi = ($.weight / ($.height/100)**2).toFixed(1)
   }
 })
 ```
@@ -429,14 +394,49 @@ const showCurrentSlide = (slides,i) =>  [...slides].forEach((element, j) => elem
 
 surge({
   next: $ => {
-    $.slides.index = ($.slides.index + 1)%4
-    showCurrentSlide($.slides.children,$.slides.index)
+    $("#slides").index = ($("#slides").index + 1)%4
+    showCurrentSlide($("#slides").children,$("#slides").index)
   },
   previous: $ => {
-    $.slides.index = (($.slides.index - 1)%4+4)%4
+   $("#slides").index = (($.slides.index - 1)%4+4)%4
     showCurrentSlide($.slides.children,$.slides.index)
   }
 })
+```
+
+### Shopping Cart Example
+
+#### HTML:
+```HTML
+<main data-surge data-local-storage="surge-cart" data-calculate="updateTotal">
+  <h1>🛒 Shopping Cart</h1>
+  <p>How many basketballs do you want to buy for $<span data-value="unitPrice">4.99</span> each?
+  <p hidden>Items in cart: <span data-value="count" data-calculate="updatePrice">0</span></p>
+
+  <button data-action="increment(-1)">-</button>
+  <button data-action="increment()">+</button>
+
+  <div data-value="basket"></div>
+    <p>Total: $<span data-value="total">0</span></p>
+
+    <label>
+    price per ball:
+    <input type="number" step="0.01" value="4.99" data-bind="unitPrice" />
+  </label>
+</main>
+```
+
+#### JavaScript:
+```javascript
+  surge({
+    increment: (n=1) => $ => {
+      $.count += n
+      $.basket = "🏀".repeat($.count)
+    },
+    updateTotal: $ => {
+      $.total = ($.total + $.unitPrice).toFixed(2)
+    }
+  });
 ```
 
 [See the code on CodePen](https://codepen.io/daz4126/pen/poBYMoP)
@@ -448,7 +448,7 @@ surge({
 #### HTML:
 ```html
 <main data-surge>
-  <h1 id="time">0.00</h1>
+  <h1 data-value="time">0.00</h1>
   <button id="toggleBtn" data-action="toggle">Start</button>
   <button data-action="reset">Reset</button>
 </main>
@@ -458,17 +458,17 @@ surge({
 ```javascript
 surge({
   toggle: $ => {
-    $.toggleBtn.value = $.ticking ? "Start" : "Stop"
+    $("toggleBtn").value = $.ticking ? "Start" : "Stop"
     if($.ticking){
       $.ticking = clearInterval($.ticking)
     } else {
         $.ticking = setInterval(() => {
-          $.time.value = (Number($.time.value) + 0.01).toFixed(2)
+          $.time = (Number($.time) + 0.01).toFixed(2)
     },10)
     }
   },
   reset: $ => {
-    $.time.value = (0).toFixed(2)
+    $.time = (0).toFixed(2)
   }
 })
 ```
@@ -568,17 +568,16 @@ surge({
 ```javascript
 const actions = {
    add: $ => {
-     $.e.preventDefault()
-     $.list.append(`<li data-action="complete" data-completed=false  class="item">${$.item.val}<button data-action=delete>delete</button></li>`)
-     $.item.value = ""
-     $.item.focus()
+     $("#list").append(`<li data-action="complete" data-completed=false  class="item">${$.item.val}<button data-action=delete>delete</button></li>`)
+     $("#item").value = ""
+     $("#item").focus()
   },
-    complete: $ => {
-      if($.target.className === "item"){
-        $.target.dataset.completed = !JSON.parse($.target.dataset.completed)
+    complete: ($,e) => {
+      if(e.target.className === "item"){
+        e.target.dataset.completed = !JSON.parse(e.target.dataset.completed)
       }  
     },
-  delete: $ => $.target.parentElement.remove()
+  delete: ($,e) => e.target.parentElement.remove()
 }
 
 surge(actions)
@@ -601,11 +600,11 @@ surge(actions)
 ```javascript
 surge({
   connect: $ => {
-    fetch($.photos.url)
+    fetch($("#photos").url)
       .then(response => response.ok ? response.json() 
                         : new Error(response.status))
       .then(data => {
-        data.forEach(photo => $.photos.append(`<img src="${`https://picsum.photos/id/${photo.id}/200`}"/>`))       
+        data.forEach(photo => $("#photos").append(`<img src="${`https://picsum.photos/id/${photo.id}/200`}"/>`))       
       })
       .catch(error => console.log(error.message))
   }

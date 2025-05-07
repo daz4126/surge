@@ -568,18 +568,18 @@ surge({
 
 #### JavaScript:
 ```javascript
+const listItemTemplate = item => `<li id="item-${item.id}" data-action="complete(${item.id})" data-completed=false class="item">${item.description}<button data-action=delete(${item.id})>delete</button></li>`
+
 const actions = {
-   add: $ => {
-     $("#list").append(`<li data-action="complete" data-completed=false  class="item">${$.item.val}<button data-action=delete>delete</button></li>`)
+  init: $ => $.id = 1,
+  add: $ => {
+     const item = {id: $.id++, description: $("#item").value}
+     $("#list").append(listItemTemplate(item))
      $("#item").value = ""
-     $("#item").focus()
+     $("#item").focus
   },
-    complete: ($,e) => {
-      if(e.target.className === "item"){
-        e.target.dataset.completed = !JSON.parse(e.target.dataset.completed)
-      }  
-    },
-  delete: ($,e) => e.target.parentElement.remove()
+  complete: id => $ =>  $(`#item-${id}`).completed = !$(`#item-${id}`).completed,
+  delete: id => $ => $(`#item-${id}`).remove()
 }
 
 surge(actions)

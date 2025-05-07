@@ -1,129 +1,211 @@
-function surge(actions = {}) {
-  const elements = {};
-  const $ = key => elements[key];
+function surge(actions = {}, templates = {}) {
+  const DATA_LIST = "[data-value], [data-bind],[data-template]";
+  const elements = new Map();
+  const bindings = {};
+  const state = {};
+  const calcs = initializeCalcs();
+  const localStorageKey =
+    document.querySelector("[data-surge]")?.dataset.localStorage || null;
+
+  // Base function to access elements
+  const base = (selector) => {
+    if (elements.has(selector)) return elements.get(selector);
+
+    const el = surgeContainer.querySelector(selector);
+    if (el) {
+      registerElement(el);
+      elements.set(selector, el); // Cache the selector
+    }
+    return el;
+  };
+
+  // Proxy to intercept property access for state
+  const $ = new Proxy(base, {
+    get(target, prop) {
+      if (prop in state) return state[prop];
+      return target[prop]; // Allow access to $ methods like $.name
+    },
+    set(target, prop, value) {
+      state[prop] = value;
+      if (bindings[prop]) {
+        bindings[prop].forEach((el) => {
+          const template = templates[prop] || templates[el.dataset.template];
+          el.innerHTML = template ? template(value, $) : value;
+          updateCalculations(prop);
+        });
+      }
+      if (localStorageKey) {
+        localStorage.setItem(
+          `${localStorageKey}-${prop}`,
+          JSON.stringify(value),
+        );
+      }
+      return true;
+    },
+    apply(target, thisArg, args) {
+      return target(...args);
+    },
+  });
+
   const surgeContainer = document.querySelector("[data-surge]");
   if (!surgeContainer) return;
-  const localStorageKey = surgeContainer.dataset.localStorage || null;
-  processElement(surgeContainer);
-  const calcs = initializeCalcs();
-  
+
+  surgeContainer.querySelectorAll(DATA_LIST).forEach(processElement);
+  bindAllActions(surgeContainer);
+
+  function initializeTemplate(el) {
+    const template = templates[el.dataset.template];
+    if (template) el.innerHTML = template(undefined, $);
+    el.querySelectorAll(DATA_LIST).forEach(processElement);
+  }
+
   function processElement(el) {
-    if (el.dataset.value) initializeElement(el);
-    if (el.dataset.element) addToSurge(el);
-    if (el.dataset.action) bindAction(el);
-    if (el.dataset.bind) bindBinding(el);
-    el.querySelectorAll("[data-element], [data-value], [data-action], [data-bind]").forEach(processElement);
+    if (el.dataset.template) initializeTemplate(el);
+    if (el.dataset.value) initializeBinding(el);
+    if (el.dataset.bind) bindTwoWay(el);
   }
 
-  function initializeElement(el) {
+  function initializeBinding(el) {
+    const key = el.dataset.value;
+
     if (localStorageKey) {
-      const storedValue = localStorage.getItem(`${localStorageKey}-${el.dataset.value}`);
-      if (storedValue) el.textContent = JSON.parse(storedValue);
+      const stored = localStorage.getItem(`${localStorageKey}-${key}`);
+      if (stored) state[key] = parseInput(stored);
+    } else {
+      state[key] = parseInput(el.textContent);
     }
-    createReactiveBinding(el);
+
+    bindings[key] ||= [];
+    bindings[key].push(el);
+
+    const template = templates[key] || templates[el.dataset.template];
+    el.innerHTML = template ? template(state[key], $) : state[key];
   }
 
-  function addToSurge(el) {
-    elements[el.dataset.element] = el;
-    Object.keys(el.dataset).forEach(key => {
-      Object.defineProperty(elements[el.dataset.element], key, {
+  function registerElement(el) {
+    Object.keys(el.dataset).forEach((key) => {
+      Object.defineProperty(el, key, {
         get: () => parseInput(el.dataset[key]),
-        set: value => (el.dataset[key] = value),
+        set: (value) => (el.dataset[key] = value),
       });
     });
-    enhanceDomManipulation(el);
+    enhanceDomMethods(el);
   }
 
-  function enhanceDomManipulation(el) {
-    ["append", "prepend", "before", "after", "replace"].forEach(m => {
-      const method = m === "replace" ? "replaceWith" : m;
-      const originalFn = el[method].bind(el);
-      el[m] = html => {
+  function enhanceDomMethods(el) {
+    ["append", "prepend", "before", "after", "replace"].forEach((method) => {
+      const domMethod = method === "replace" ? "replaceWith" : method;
+      const original = el[domMethod].bind(el);
+      el[method] = (html) => {
         const template = document.createElement("template");
         template.innerHTML = typeof html === "object" ? html.outerHTML : html;
-      Array.from(template.content.children).forEach(child => {
-        originalFn(child);
-        processElement(child);
+        Array.from(template.content.children).forEach((child) => {
+          original(child);
+          processElement(child);
+          child.querySelectorAll(DATA_LIST).forEach(processElement);
         });
       };
     });
   }
 
-  function createReactiveBinding(el) {
-    const prop = el.dataset.value;
-    if (!prop) return;
-    // Define a reactive property
-    Object.defineProperty($, prop, {
-      configurable: true,
-      get() { return parseInput(el.textContent); },
-      set(value) {
-        el.textContent = value;
-        updateCalculations(prop);
-        if (localStorageKey) {
-          localStorage.setItem(`${localStorageKey}-${prop}`, JSON.stringify(value));
+  function bindTwoWay(el) {
+    const key = el.dataset.bind;
+    el.addEventListener("input", (e) => {
+      $[key] = parseInput(e.target.value);
+    });
+  }
+
+  function bindAllActions(container) {
+    const actionEvents = new Set();
+    container.querySelectorAll("[data-action]").forEach((el) => {
+      const [event] = el.dataset.action.includes("->")
+        ? el.dataset.action.split("->").map((s) => s.trim())
+        : [getEvent(el)];
+
+      actionEvents.add(event);
+    });
+    actionEvents.forEach((event) => {
+      container.addEventListener(event, (e) => {
+        const el = e.target.closest("[data-action]");
+        if (!el || !container.contains(el)) return;
+
+        const [expectedEvent, action] = el.dataset.action.includes("->")
+          ? el.dataset.action.split("->").map((s) => s.trim())
+          : [getEvent(el), el.dataset.action];
+
+        if (expectedEvent !== event) return;
+
+        if (el.dataset.default == null) e.preventDefault();
+
+        const [method, args] = parseAction(action);
+        if (actions[method]) {
+          Array.isArray(args)
+            ? actions[method](...args)($, e)
+            : actions[method]($, e);
         }
-      }
-    });
-  }
-
-  function bindBinding(el) {
-    const bindKey = el.dataset.bind;
-    if (!bindKey) return;
-    el.addEventListener("input", e => {
-      $[bindKey] = parseInput(e.target.value);
-    });
-  }
-
-  function bindAction(el) {
-    const [event, action] = el.dataset.action.includes("->")
-      ? el.dataset.action.split("->").map(part => part.trim())
-      : [getEvent(el), el.dataset.action];
-    const [method, args] = parseAction(action);
-    el.addEventListener(event, (e) => {
-      if(el.dataset.default == null) e.preventDefault();
-      if (actions[method]) Array.isArray(args) ? actions[method](...args)($, e) : actions[method]($, e);
+      });
     });
   }
 
   function initializeCalcs() {
     const calculations = [];
-    document.querySelectorAll("[data-surge] [data-calculate],[data-surge][data-calculate]").forEach(el => {
-      const calcs = el.dataset.calculate.split(",");
-      const val = el.dataset.value;  
-      calcs.forEach(calc =>{
-        const func = actions[calc];
-        if(!func) return;
-        const existingCalc = calculations.find(c => c.func === func);
-        if (existingCalc) {
-          existingCalc.values.push(val);
-        } else {
-          calculations.push({ func, values: [val] });
-        }
-      })    
-    });
+    document
+      .querySelectorAll(
+        "[data-surge] [data-calculate],[data-surge][data-calculate]",
+      )
+      .forEach((el) => {
+        const calcs = el.dataset.calculate.split(",");
+        const val = el.dataset.value;
+        calcs.forEach((calc) => {
+          const func = actions[calc];
+          if (!func) return;
+          const existingCalc = calculations.find((c) => c.func === func);
+          if (existingCalc) {
+            existingCalc.values.push(val);
+          } else {
+            calculations.push({ func, values: [val] });
+          }
+        });
+      });
     return calculations;
   }
 
   function updateCalculations(value) {
-      calcs.filter(calc => calc.values.includes(value)  || calc.values.includes(undefined)).forEach(calc => calc.func($));
-    }
-  // Call the initialize action if it exists
+    calcs
+      .filter(
+        (calc) =>
+          calc.values.includes(value) || calc.values.includes(undefined),
+      )
+      .forEach((calc) => calc.func($));
+  }
+
   if (actions.init) actions.init($);
 }
 
 function getEvent(el) {
-  return ({ FORM: "submit", INPUT: "input", TEXTAREA: "input", SELECT: "change" }[el.tagName] || "click");
+  return (
+    { FORM: "submit", INPUT: "input", TEXTAREA: "input", SELECT: "change" }[
+      el.tagName
+    ] || "click"
+  );
 }
 
 function parseAction(action) {
   const match = action.match(/^(\w+)\((.*)\)$/);
   const method = match ? match[1].trim() : action;
-  const args = match ? match[2] ? match[2].split(",").map(arg => parseInput(arg.trim())) : [undefined] : null;
+  const args = match
+    ? match[2]
+      ? match[2].split(",").map((arg) => parseInput(arg.trim()))
+      : [undefined]
+    : null;
   return [method, args];
 }
 
 function parseInput(value) {
-  try { return JSON.parse(value);} 
-  catch { return value;}
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
 }
-export default surge
+export default surge;

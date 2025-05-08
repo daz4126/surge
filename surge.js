@@ -1,8 +1,9 @@
 function surge(actions = {}, templates = {}) {
-  const DATA_LIST = "[data-reaction],[data-bind],[data-template]";
+  const DATA_LIST = "[data-reaction],[data-bind],[data-template],[data-action]";
   const elements = new Map();
   const bindings = {};
   const state = {};
+  const boundEvents = new Set();
   const calcs = initializeCalcs();
   const localStorageKey =
     document.querySelector("[data-surge]")?.dataset.localStorage || null;
@@ -10,13 +11,12 @@ function surge(actions = {}, templates = {}) {
   // Base function to access elements
   const base = (selector) => {
     if (elements.has(selector)) return elements.get(selector);
-
     const els = surgeContainer.querySelectorAll(selector);
-    if (els.length > 0) {
-      els.forEach((el) => registerElement(el));
-      elements.set(selector, els); // Cache the selector
-    }
-    return els.length === 1 ? els[0] : els;
+    if (els.length < 1) return;
+    els.forEach((el) => registerElement(el));
+    const el = els.length === 1 ? els[0] : els;
+    elements.set(selector, el); // Cache the selector
+    return el;
   };
 
   // Proxy to intercept property access for state
@@ -26,8 +26,8 @@ function surge(actions = {}, templates = {}) {
       return target[prop]; // Allow access to $ methods like $.name
     },
     set(target, prop, value) {
-      state[prop] = value;
-      if (bindings[prop]) {
+      if (bindings[prop] && state[prop] !== value) {
+        state[prop] = value;
         bindings[prop].forEach((el) => {
           const template = templates[prop] || templates[el.dataset.template];
           el.innerHTML = template ? template(value, $) : value;
@@ -63,6 +63,7 @@ function surge(actions = {}, templates = {}) {
     if (el.dataset.template) initializeTemplate(el);
     if (el.dataset.reaction) initializeBinding(el);
     if (el.dataset.bind) bindTwoWay(el);
+    if (el.dataset.action) bindAllActions(surgeContainer, el);
   }
 
   function initializeBinding(el) {
@@ -115,36 +116,37 @@ function surge(actions = {}, templates = {}) {
     });
   }
 
-  function bindAllActions(container) {
-    const actionEvents = new Set();
-    container.querySelectorAll("[data-action]").forEach((el) => {
-      const [event] = el.dataset.action.includes("->")
-        ? el.dataset.action.split("->").map((s) => s.trim())
-        : [getEvent(el)];
+  function bindAllActions(container, el = null) {
+    const targets = el ? [el] : container.querySelectorAll("[data-action]");
+    targets.forEach((element) => {
+      const [event] = element.dataset.action.includes("->")
+        ? element.dataset.action.split("->").map((s) => s.trim())
+        : [getEvent(element)];
 
-      actionEvents.add(event);
+      if (!boundEvents.has(event)) {
+        container.addEventListener(event, handleAction);
+        boundEvents.add(event);
+      }
     });
-    actionEvents.forEach((event) => {
-      container.addEventListener(event, (e) => {
-        const el = e.target.closest("[data-action]");
-        if (!el || !container.contains(el)) return;
+  }
+  function handleAction(e) {
+    const el = e.target.closest("[data-action]");
+    if (!el || !surgeContainer.contains(el)) return;
 
-        const [expectedEvent, action] = el.dataset.action.includes("->")
-          ? el.dataset.action.split("->").map((s) => s.trim())
-          : [getEvent(el), el.dataset.action];
+    const [expectedEvent, action] = el.dataset.action.includes("->")
+      ? el.dataset.action.split("->").map((s) => s.trim())
+      : [getEvent(el), el.dataset.action];
 
-        if (expectedEvent !== event) return;
+    if (expectedEvent !== e.type) return;
 
-        if (el.dataset.default == null) e.preventDefault();
+    if (el.dataset.default == null) e.preventDefault();
 
-        const [method, args] = parseAction(action);
-        if (actions[method]) {
-          Array.isArray(args)
-            ? actions[method](...args)($, e)
-            : actions[method]($, e);
-        }
-      });
-    });
+    const [method, args] = parseAction(action);
+    if (actions[method]) {
+      Array.isArray(args)
+        ? actions[method](...args)($, e)
+        : actions[method]($, e);
+    }
   }
 
   function initializeCalcs() {

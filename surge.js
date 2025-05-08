@@ -27,13 +27,13 @@ function surge(actions = {}, templates = {}) {
     },
     set(target, prop, value) {
       if (bindings[prop] && state[prop] !== value) {
-        state[prop] = value;
         bindings[prop].forEach((el) => {
           const template = templates[prop] || templates[el.dataset.template];
           el.innerHTML = template ? template(value, $) : value;
           updateCalculations(prop);
         });
       }
+      state[prop] = value;
       if (localStorageKey) {
         localStorage.setItem(
           `${localStorageKey}-${prop}`,

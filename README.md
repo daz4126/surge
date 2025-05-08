@@ -239,14 +239,14 @@ surge({
 <main data-surge>
   <div id="game">
   <h2>Times Tables</h2>
-  <h2>Score: <span id="score">0</span></h2>
-  <h1><span id="question">1</span>) <span id="x"></span> &times; <span id="y"></span> = <span id="answer"></span><span id="feedback"></span></h1>
+  <h2>Score: <span data-reaction="score">0</span></h2>
+  <h1><span data-reaction="question">1</span>) <span data-reaction="x"></span> &times; <span data-reaction="y"></span> = <span data-reaction="answer"></span><span data-reaction="feedback"></span></h1>
   <form data-action="check">
     <input id="userAnswer" />
   </form>
   </div>
   <div id="info" hidden=true>
-  <h2 id="message"></h2>
+  <h2 data-reaction="message"></h2>
     <button data-action="newGame">Play Again</button>
   </div>
 </main>
@@ -257,47 +257,45 @@ surge({
 const NUMBER_OF_QUESTIONS = 5
 
 const randomNumber = n => Math.ceil(Math.random()*n)
-const generateQuestion = (x,y) => {
-  x.value = randomNumber(12)
-  y.value = randomNumber(12)
+
+const reset = $ => {
+  $.x = randomNumber(12)
+  $.y = randomNumber(12)
+  $("#userAnswer").value = ""
+  $.answer = ""
+  $.feedback = ""
 }
 
 surge({
-  connect: $ => {
-    generateQuestion($.x,$.y)
+  init: $ => {
+    reset($)
   },
   check: $ => {
-    $.e.preventDefault()
-    $.answer.value = $.userAnswer.value
-    if($.userAnswer.value == $.x.value * $.y.value){
-      $.score.value ++
-      $.feedback.value = "✅"
+    $.answer = $("#userAnswer").value
+    console.log($("#userAnswer"),$("#userAnswer").value)
+    if($.answer == $.x * $.y){
+      $.score ++
+      $.feedback = "✅"
     } else {
-      $.feedback.value = "❌"
+      $.feedback = "❌"
     }
     setTimeout(() => {
-      if($.question.value === NUMBER_OF_QUESTIONS){
-        $.message.value = `Game Over. You Scored ${$.score.value}`
-        $.game.hidden = true
-        $.info.hidden = false
+      if($.question === NUMBER_OF_QUESTIONS){
+        $.message = `Game Over. You Scored ${$.score}`
+        $("#game").hidden = true
+        $("#info").hidden = false
       } else {
-        $.question.value ++
-        generateQuestion($.x,$.y)
-        $.userAnswer.value = ""
-        $.answer.value = ""
-        $.feedback.value = ""
+        $.question ++
+        reset($)
     }
     },700)
   },
   newGame: $ => {
-    generateQuestion($.x,$.y)
-    $.question.value = 1
-    $.score.value = 0
-    $.game.hidden = false
-    $.info.hidden = true
-    $.answer.value = ""
-    $.userAnswer.value = ""
-    $.feedback.value = ""
+    reset($)
+    $.question = 1
+    $.score = 0
+    $("#game").hidden = false
+    $("#info").hidden = true
   },
 })
 ```

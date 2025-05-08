@@ -14,9 +14,9 @@ function surge(actions = {}, templates = {}) {
     const els = surgeContainer.querySelectorAll(selector);
     if (els.length < 1) return;
     els.forEach((el) => registerElement(el));
-    const el = els.length === 1 ? els[0] : els;
-    elements.set(selector, el); // Cache the selector
-    return el;
+    return elements
+      .set(selector, els.length === 1 ? els[0] : els)
+      .get(selector);
   };
 
   // Proxy to intercept property access for state
@@ -54,7 +54,8 @@ function surge(actions = {}, templates = {}) {
   bindAllActions(surgeContainer);
 
   function initializeTemplate(el) {
-    const template = templates[el.dataset.template];
+    const template =
+      templates[el.dataset.reaction] || templates[el.dataset.template];
     if (template) el.innerHTML = template(undefined, $);
     el.querySelectorAll(DATA_LIST).forEach(processElement);
   }
@@ -68,19 +69,11 @@ function surge(actions = {}, templates = {}) {
 
   function initializeBinding(el) {
     const key = el.dataset.reaction;
-
-    if (localStorageKey) {
-      const stored = localStorage.getItem(`${localStorageKey}-${key}`);
-      if (stored) state[key] = parseInput(stored);
-    } else {
-      state[key] = parseInput(el.textContent);
-    }
-
-    bindings[key] ||= [];
-    bindings[key].push(el);
-
-    const template = templates[key] || templates[el.dataset.template];
-    el.innerHTML = template ? template(state[key], $) : state[key];
+    const stored =
+      localStorageKey && localStorage.getItem(`${localStorageKey}-${key}`);
+    state[key] = parseInput(stored ?? el.textContent);
+    (bindings[key] ||= []).push(el);
+    initializeTemplate(el);
   }
 
   function registerElement(el) {
@@ -162,11 +155,9 @@ function surge(actions = {}, templates = {}) {
           const func = actions[calc];
           if (!func) return;
           const existingCalc = calculations.find((c) => c.func === func);
-          if (existingCalc) {
-            existingCalc.values.push(val);
-          } else {
-            calculations.push({ func, values: [val] });
-          }
+          existingCalc
+            ? existingCalc.values.push(val)
+            : calculations.push({ func, values: [val] });
         });
       });
     return calculations;
@@ -195,11 +186,9 @@ function getEvent(el) {
 function parseAction(action) {
   const match = action.match(/^(\w+)\((.*)\)$/);
   const method = match ? match[1].trim() : action;
-  const args = match
-    ? match[2]
-      ? match[2].split(",").map((arg) => parseInput(arg.trim()))
-      : [undefined]
-    : null;
+  const args =
+    match?.[2]?.split(",").map((arg) => parseInput(arg.trim())) ?? null;
+
   return [method, args];
 }
 

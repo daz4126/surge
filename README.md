@@ -135,25 +135,22 @@ surge({
 
 #### HTML:
 ```html
-<main data-surge>
+<main data-surge data-calculate="update">
   <h2>BMI Calculator</h2>
-  <h2>BMI: <strong data-value="bmi">25</strong></h2>
+  <h2>BMI: <strong data-reaction="bmi">22.2</strong></h2>
   <label>Weight (kg):</label>
-  <input type="range" min=0 max=150 data-action="update" data-target="weight" value=45>
-  <h2 id="weight">75</h2>
+  <input type="range" min=0 max=150 data-bind="weight" value=50>
+  <h2 data-reaction="weight">50</h2>
   <label>Height (cm):</label>
-  <input type="range" min=0 max=250 data-action="update" data-target="height" value=150>
-  <h2 id="height">25</h2>
+  <input type="range" min=0 max=250 data-bind="height" value=150>
+  <h2 data-reaction="height">150</h2>
 </main>
 ```
 
 #### JavaScript:
 ```javascript
 surge({
-  update: $ => {
-    $[$.target.dataset.target] = $.target
-    $.bmi = ($.weight / ($.height/100)**2).toFixed(1)
-  }
+  update: $ => $.bmi = ($.weight / ($.height/100)**2).toFixed(1)
 })
 ```
 
@@ -169,27 +166,28 @@ surge({
 <main data-surge>
   <button data-action="previous"> ← </button>
   <button data-action="next"> → </button>
-  <div id="slides" data-index=0>
-    <div>🐵</div>
-    <div hidden>🙈</div>
-    <div hidden>🙉</div>
-    <div hidden>🙊</div>
+  <div>
+    <div class="slide">🐵</div>
+    <div class="slide" hidden>🙈</div>
+    <div class="slide" hidden>🙉</div>
+    <div class="slide" hidden>🙊</div>
   </div>
 </main>
 ```
 
 #### JavaScript:
 ```javascript
-const showCurrentSlide = (slides,i) =>  [...slides].forEach((element, j) => element.hidden = j !== i)
+const showCurrentSlide = (slides,i) =>  slides.forEach((element, j) => element.hidden = j !== i)
 
 surge({
+  init: $ => $.index = 0,
   next: $ => {
-    $("#slides").index = ($("#slides").index + 1)%4
-    showCurrentSlide($("#slides").children,$("#slides").index)
+    $.index = ($.index+1)%4
+    showCurrentSlide($(".slide"),$.index)
   },
   previous: $ => {
-   $("#slides").index = (($.slides.index - 1)%4+4)%4
-    showCurrentSlide($.slides.children,$.slides.index)
+    $.index = (($.index-1)%4+4)%4
+    showCurrentSlide($(".slide"),$.index)
   }
 })
 ```
@@ -352,7 +350,7 @@ surge(actions)
 #### JavaScript:
 ```javascript
 surge({
-  connect: $ => {
+  init: $ => {
     fetch($("#photos").url)
       .then(response => response.ok ? response.json() 
                         : new Error(response.status))

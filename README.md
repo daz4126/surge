@@ -4,13 +4,30 @@
 
 Surge is a tiny, ultra-lightweight JavaScript library that adds a surge of reactivity to your HTML — all in just 1kb (minified and gzipped).
 
+See how simple a basic counter is - just use data-attributes to add an action and a reaction!
+
+```html
+<main data-surge>
+  <button data-action="increment">Count</button>
+  <h1 data-reaction="count">0</h1>
+</main>
+```
+
+Then tell the action what to do in your JavaScript:
+
+```javacript
+surge({
+  increment: $ => $.count ++
+})
+```
+
 What if you could have an object that behaved like jQuery, but also managed reactive state? With Surge you can!
 
 No virtual DOM. No build step. No dependencies. Just drop it in and go.
 
 Surge embraces the simplicity of the web and the power of HTML-first development. It supercharges your HTML with a sprinkle of declarative magic using `data-*` attributes — no JSX, no diffing and no dependencies. Just clean, semantic HTML — with a surge of reactiviey.
 
-## Quick Start Example
+## Another Example
 
 Write some HTML ...
 
@@ -22,7 +39,7 @@ Write some HTML ...
 </div>
 ```
 
-... then add a Surge of Reactivity in the JS
+... then add a Surge of Reactivity in the JS:
 
 ```javascript
 surge({

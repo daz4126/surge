@@ -65,6 +65,309 @@ Surge is built with simplicity in mind and works with the browser. HTML is the t
 
 Surge was inspired by the brilliant [Stimulus](https://stimulus.hotwired.dev) library.
 
+# Usage
+
+### ⚡️ Actions & Reactions
+
+### ⚡️ 2-Way Bindings
+
+### ⚡️ Dynamic Content
+
+### ⚡️ Calculations
+
+### ⚡️ Local Storage
+
+# Examples
+
+Have a look at the examples below to see how Surge can be used to create a variety of interactive HTML.
+
+### Likes Counter
+
+![Likes Counter](https://github.com/daz4126/surge/assets/16646/83a1d67d-2ec5-4d7b-998f-f33a4271dbfa)
+
+
+#### HTML:
+```html
+<main data-surge>
+  <h1>❤️ <strong data-reaction="count">0</strong></h1>
+  <button data-action="increment">👍</button>
+  <button data-action="decrement">👎</button>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  increment: $ => $.count.value++,
+  decrement: $ => $.count.value--
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/oNOVEme)
+
+### Character Counter
+
+![Charcter Counter](https://github.com/daz4126/surge/assets/16646/bc408184-3989-465d-82d7-13d64b5753b7)
+
+#### HTML:
+```html
+<main data-surge>
+  <textarea data-action="count"></textarea>
+  <p>
+    There are
+    <strong data-reaction="count">0</strong> characters in this textarea.
+  </p>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  count: ($,e) => $.count.value = e.target.value.length
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/XWQONvR)
+
+### BMI Calculator
+
+![BMI Calculator](https://github.com/daz4126/surge/assets/16646/f6cbaecb-ebb3-42d8-a4ec-5033a3939df2)
+
+#### HTML:
+```html
+<main data-surge>
+  <h2>BMI Calculator</h2>
+  <h2>BMI: <strong data-value="bmi">25</strong></h2>
+  <label>Weight (kg):</label>
+  <input type="range" min=0 max=150 data-action="update" data-target="weight" value=45>
+  <h2 id="weight">75</h2>
+  <label>Height (cm):</label>
+  <input type="range" min=0 max=250 data-action="update" data-target="height" value=150>
+  <h2 id="height">25</h2>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  update: $ => {
+    $[$.target.dataset.target] = $.target
+    $.bmi = ($.weight / ($.height/100)**2).toFixed(1)
+  }
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/abxXwQR)
+
+### Slideshow
+
+![Slideshow](https://github.com/daz4126/surge/assets/16646/66001699-521d-4b8b-97c2-b9a75fffea87)
+
+
+#### HTML:
+```html
+<main data-surge>
+  <button data-action="previous"> ← </button>
+  <button data-action="next"> → </button>
+  <div id="slides" data-index=0>
+    <div>🐵</div>
+    <div hidden>🙈</div>
+    <div hidden>🙉</div>
+    <div hidden>🙊</div>
+  </div>
+</main>
+```
+
+#### JavaScript:
+```javascript
+const showCurrentSlide = (slides,i) =>  [...slides].forEach((element, j) => element.hidden = j !== i)
+
+surge({
+  next: $ => {
+    $("#slides").index = ($("#slides").index + 1)%4
+    showCurrentSlide($("#slides").children,$("#slides").index)
+  },
+  previous: $ => {
+   $("#slides").index = (($.slides.index - 1)%4+4)%4
+    showCurrentSlide($.slides.children,$.slides.index)
+  }
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/poBYMoP)
+
+### Stopwatch
+
+![Screenshot 2024-05-18 at 10 12 29](https://github.com/daz4126/surge/assets/16646/8858d7ed-3935-4dbe-9a19-2e3ed7835b03)
+
+#### HTML:
+```html
+<main data-surge>
+  <h1 data-reaction="time">0.00</h1>
+  <button data-reaction="start_stop" data-action="toggle">Start</button>
+  <button data-action="reset">Reset</button>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  toggle: $ => {
+    $.start_stop = $.ticking ? "Start" : "Stop"
+    if($.ticking){
+      $.ticking = clearInterval($.ticking)
+    } else {
+        $.ticking = setInterval(() => {
+          $.time = (Number($.time) + 0.01).toFixed(2)
+    },10)
+    }
+  },
+  reset: $ => {
+    $.time = (0).toFixed(2)
+  }
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/mdgoqOQ)
+
+### Times Table Quiz
+
+![Times Table Quiz](https://github.com/daz4126/surge/assets/16646/50717e99-a798-4007-8edc-1b7756351a2c)
+
+#### HTML:
+```html
+<main data-surge>
+  <div id="game">
+  <h2>Times Tables</h2>
+  <h2>Score: <span id="score">0</span></h2>
+  <h1><span id="question">1</span>) <span id="x"></span> &times; <span id="y"></span> = <span id="answer"></span><span id="feedback"></span></h1>
+  <form data-action="check">
+    <input id="userAnswer" />
+  </form>
+  </div>
+  <div id="info" hidden=true>
+  <h2 id="message"></h2>
+    <button data-action="newGame">Play Again</button>
+  </div>
+</main>
+```
+
+#### JavaScript:
+```javascript
+const NUMBER_OF_QUESTIONS = 5
+
+const randomNumber = n => Math.ceil(Math.random()*n)
+const generateQuestion = (x,y) => {
+  x.value = randomNumber(12)
+  y.value = randomNumber(12)
+}
+
+surge({
+  connect: $ => {
+    generateQuestion($.x,$.y)
+  },
+  check: $ => {
+    $.e.preventDefault()
+    $.answer.value = $.userAnswer.value
+    if($.userAnswer.value == $.x.value * $.y.value){
+      $.score.value ++
+      $.feedback.value = "✅"
+    } else {
+      $.feedback.value = "❌"
+    }
+    setTimeout(() => {
+      if($.question.value === NUMBER_OF_QUESTIONS){
+        $.message.value = `Game Over. You Scored ${$.score.value}`
+        $.game.hidden = true
+        $.info.hidden = false
+      } else {
+        $.question.value ++
+        generateQuestion($.x,$.y)
+        $.userAnswer.value = ""
+        $.answer.value = ""
+        $.feedback.value = ""
+    }
+    },700)
+  },
+  newGame: $ => {
+    generateQuestion($.x,$.y)
+    $.question.value = 1
+    $.score.value = 0
+    $.game.hidden = false
+    $.info.hidden = true
+    $.answer.value = ""
+    $.userAnswer.value = ""
+    $.feedback.value = ""
+  },
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/vYMPdPd)
+
+### To Do List
+
+![Screenshot 2024-05-11 at 17 44 53](https://github.com/daz4126/surge/assets/16646/28d94fd6-2c51-4d10-b8d7-34b6fcaca2e8)
+
+#### HTML:
+```html
+<main data-surge>
+  <form data-action="add">
+  <input id="item" placeholder="What do you want to do?"/>
+  <button type="submit">+</button>
+</form>
+  <ul id="list"></ul>
+</main>
+```
+
+#### JavaScript:
+```javascript
+const listItemTemplate = item => `<li id="item-${item.id}" data-action="complete(${item.id})" data-completed=false class="item">${item.description}<button data-action=delete(${item.id})>delete</button></li>`
+
+const actions = {
+  init: $ => $.id = 1,
+  add: $ => {
+     const item = {id: $.id++, description: $("#item").value}
+     $("#list").append(listItemTemplate(item))
+     $("#item").value = ""
+     $("#item").focus
+  },
+  complete: id => $ =>  $(`#item-${id}`).completed = !$(`#item-${id}`).completed,
+  delete: id => $ => $(`#item-${id}`).remove()
+}
+
+surge(actions)
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/PogvwBZ)
+
+### Fetching Data
+
+![Fetching Data](https://github.com/daz4126/surge/assets/16646/8ea5b762-b7ad-41b8-8c9d-581c03b51710)
+
+#### HTML:
+```html
+<main data-surge>
+  <div id="photos" data-url="https://picsum.photos/v2/list"></div>
+</main>
+```
+
+#### JavaScript:
+```javascript
+surge({
+  connect: $ => {
+    fetch($("#photos").url)
+      .then(response => response.ok ? response.json() 
+                        : new Error(response.status))
+      .then(data => {
+        data.forEach(photo => $("#photos").append(`<img src="${`https://picsum.photos/id/${photo.id}/200`}"/>`))       
+      })
+      .catch(error => console.log(error.message))
+  }
+})
+```
+
+[See the code on CodePen](https://codepen.io/daz4126/pen/MWRRgLg)
+
 
 ## Installation
 
@@ -304,330 +607,5 @@ $.state.username = "Ada"
 
 The key thing to remember is that the Surge object acts just like a regular object and is available in every action.
 
-**See the Stopwatch example below for this technique being used to keep track of whether the clock is ticking**
+**See the Stopwatch example for this technique being used to keep track of whether the clock is ticking**
 
-# Examples
-
-Have a look at the examples below to see how Surge can be used to create a variety of interactive HTML.
-
-### Likes Counter
-
-![Likes Counter](https://github.com/daz4126/surge/assets/16646/83a1d67d-2ec5-4d7b-998f-f33a4271dbfa)
-
-
-#### HTML:
-```html
-<main data-surge>
-  <h1>❤️ <strong data-value="count">0</strong></h1>
-  <button data-action="increment">👍</button>
-  <button data-action="decrement">👎</button>
-</main>
-```
-
-#### JavaScript:
-```javascript
-surge({
-  increment: $ => $.count.value++,
-  decrement: $ => $.count.value--
-})
-```
-
-[See the code on CodePen](https://codepen.io/daz4126/pen/oNOVEme)
-
-### Character Counter
-
-![Charcter Counter](https://github.com/daz4126/surge/assets/16646/bc408184-3989-465d-82d7-13d64b5753b7)
-
-#### HTML:
-```html
-<main data-surge>
-  <textarea data-action="count"></textarea>
-  <p>
-    There are
-    <strong data-value="count">0</strong> characters in this textarea.
-  </p>
-</main>
-```
-
-#### JavaScript:
-```javascript
-surge({
-  count: ($,e) => $.count.value = e.target.value.length
-})
-```
-
-[See the code on CodePen](https://codepen.io/daz4126/pen/XWQONvR)
-
-### BMI Calculator
-
-![BMI Calculator](https://github.com/daz4126/surge/assets/16646/f6cbaecb-ebb3-42d8-a4ec-5033a3939df2)
-
-#### HTML:
-```html
-<main data-surge>
-  <h2>BMI Calculator</h2>
-  <h2>BMI: <strong data-value="bmi">25</strong></h2>
-  <label>Weight (kg):</label>
-  <input type="range" min=0 max=150 data-action="update" data-target="weight" value=45>
-  <h2 id="weight">75</h2>
-  <label>Height (cm):</label>
-  <input type="range" min=0 max=250 data-action="update" data-target="height" value=150>
-  <h2 id="height">25</h2>
-</main>
-```
-
-#### JavaScript:
-```javascript
-surge({
-  update: $ => {
-    $[$.target.dataset.target] = $.target
-    $.bmi = ($.weight / ($.height/100)**2).toFixed(1)
-  }
-})
-```
-
-[See the code on CodePen](https://codepen.io/daz4126/pen/abxXwQR)
-
-### Slideshow
-
-![Slideshow](https://github.com/daz4126/surge/assets/16646/66001699-521d-4b8b-97c2-b9a75fffea87)
-
-
-#### HTML:
-```html
-<main data-surge>
-  <button data-action="previous"> ← </button>
-  <button data-action="next"> → </button>
-  <div id="slides" data-index=0>
-    <div>🐵</div>
-    <div hidden>🙈</div>
-    <div hidden>🙉</div>
-    <div hidden>🙊</div>
-  </div>
-</main>
-```
-
-#### JavaScript:
-```javascript
-const showCurrentSlide = (slides,i) =>  [...slides].forEach((element, j) => element.hidden = j !== i)
-
-surge({
-  next: $ => {
-    $("#slides").index = ($("#slides").index + 1)%4
-    showCurrentSlide($("#slides").children,$("#slides").index)
-  },
-  previous: $ => {
-   $("#slides").index = (($.slides.index - 1)%4+4)%4
-    showCurrentSlide($.slides.children,$.slides.index)
-  }
-})
-```
-
-### Shopping Cart Example
-
-#### HTML:
-```HTML
-<main data-surge data-local-storage="surge-cart" data-calculate="updateTotal">
-  <h1>🛒 Shopping Cart</h1>
-  <p>How many basketballs do you want to buy for $<span data-value="unitPrice">4.99</span> each?
-  <p hidden>Items in cart: <span data-value="count" data-calculate="updatePrice">0</span></p>
-
-  <button data-action="increment(-1)">-</button>
-  <button data-action="increment()">+</button>
-
-  <div data-value="basket"></div>
-    <p>Total: $<span data-value="total">0</span></p>
-
-    <label>
-    price per ball:
-    <input type="number" step="0.01" value="4.99" data-bind="unitPrice" />
-  </label>
-</main>
-```
-
-#### JavaScript:
-```javascript
-  surge({
-    increment: (n=1) => $ => {
-      $.count += n
-      $.basket = "🏀".repeat($.count)
-    },
-    updateTotal: $ => {
-      $.total = ($.total + $.unitPrice).toFixed(2)
-    }
-  });
-```
-
-[See the code on CodePen](https://codepen.io/daz4126/pen/poBYMoP)
-
-### Stopwatch
-
-![Screenshot 2024-05-18 at 10 12 29](https://github.com/daz4126/surge/assets/16646/8858d7ed-3935-4dbe-9a19-2e3ed7835b03)
-
-#### HTML:
-```html
-<main data-surge>
-  <h1 data-value="time">0.00</h1>
-  <button id="toggleBtn" data-action="toggle">Start</button>
-  <button data-action="reset">Reset</button>
-</main>
-```
-
-#### JavaScript:
-```javascript
-surge({
-  toggle: $ => {
-    $("toggleBtn").value = $.ticking ? "Start" : "Stop"
-    if($.ticking){
-      $.ticking = clearInterval($.ticking)
-    } else {
-        $.ticking = setInterval(() => {
-          $.time = (Number($.time) + 0.01).toFixed(2)
-    },10)
-    }
-  },
-  reset: $ => {
-    $.time = (0).toFixed(2)
-  }
-})
-```
-
-[See the code on CodePen](https://codepen.io/daz4126/pen/mdgoqOQ)
-
-### Times Table Quiz
-
-![Times Table Quiz](https://github.com/daz4126/surge/assets/16646/50717e99-a798-4007-8edc-1b7756351a2c)
-
-#### HTML:
-```html
-<main data-surge>
-  <div id="game">
-  <h2>Times Tables</h2>
-  <h2>Score: <span id="score">0</span></h2>
-  <h1><span id="question">1</span>) <span id="x"></span> &times; <span id="y"></span> = <span id="answer"></span><span id="feedback"></span></h1>
-  <form data-action="check">
-    <input id="userAnswer" />
-  </form>
-  </div>
-  <div id="info" hidden=true>
-  <h2 id="message"></h2>
-    <button data-action="newGame">Play Again</button>
-  </div>
-</main>
-```
-
-#### JavaScript:
-```javascript
-const NUMBER_OF_QUESTIONS = 5
-
-const randomNumber = n => Math.ceil(Math.random()*n)
-const generateQuestion = (x,y) => {
-  x.value = randomNumber(12)
-  y.value = randomNumber(12)
-}
-
-surge({
-  connect: $ => {
-    generateQuestion($.x,$.y)
-  },
-  check: $ => {
-    $.e.preventDefault()
-    $.answer.value = $.userAnswer.value
-    if($.userAnswer.value == $.x.value * $.y.value){
-      $.score.value ++
-      $.feedback.value = "✅"
-    } else {
-      $.feedback.value = "❌"
-    }
-    setTimeout(() => {
-      if($.question.value === NUMBER_OF_QUESTIONS){
-        $.message.value = `Game Over. You Scored ${$.score.value}`
-        $.game.hidden = true
-        $.info.hidden = false
-      } else {
-        $.question.value ++
-        generateQuestion($.x,$.y)
-        $.userAnswer.value = ""
-        $.answer.value = ""
-        $.feedback.value = ""
-    }
-    },700)
-  },
-  newGame: $ => {
-    generateQuestion($.x,$.y)
-    $.question.value = 1
-    $.score.value = 0
-    $.game.hidden = false
-    $.info.hidden = true
-    $.answer.value = ""
-    $.userAnswer.value = ""
-    $.feedback.value = ""
-  },
-})
-```
-
-[See the code on CodePen](https://codepen.io/daz4126/pen/vYMPdPd)
-
-### To Do List
-
-![Screenshot 2024-05-11 at 17 44 53](https://github.com/daz4126/surge/assets/16646/28d94fd6-2c51-4d10-b8d7-34b6fcaca2e8)
-
-#### HTML:
-```html
-<main data-surge>
-  <form data-action="add">
-  <input id="item" placeholder="What do you want to do?"/>
-  <button type="submit">+</button>
-</form>
-  <ul id="list"></ul>
-</main>
-```
-
-#### JavaScript:
-```javascript
-const listItemTemplate = item => `<li id="item-${item.id}" data-action="complete(${item.id})" data-completed=false class="item">${item.description}<button data-action=delete(${item.id})>delete</button></li>`
-
-const actions = {
-  init: $ => $.id = 1,
-  add: $ => {
-     const item = {id: $.id++, description: $("#item").value}
-     $("#list").append(listItemTemplate(item))
-     $("#item").value = ""
-     $("#item").focus
-  },
-  complete: id => $ =>  $(`#item-${id}`).completed = !$(`#item-${id}`).completed,
-  delete: id => $ => $(`#item-${id}`).remove()
-}
-
-surge(actions)
-```
-
-[See the code on CodePen](https://codepen.io/daz4126/pen/PogvwBZ)
-
-### Fetching Data
-
-![Fetching Data](https://github.com/daz4126/surge/assets/16646/8ea5b762-b7ad-41b8-8c9d-581c03b51710)
-
-#### HTML:
-```html
-<main data-surge>
-  <div id="photos" data-url="https://picsum.photos/v2/list"></div>
-</main>
-```
-
-#### JavaScript:
-```javascript
-surge({
-  connect: $ => {
-    fetch($("#photos").url)
-      .then(response => response.ok ? response.json() 
-                        : new Error(response.status))
-      .then(data => {
-        data.forEach(photo => $("#photos").append(`<img src="${`https://picsum.photos/id/${photo.id}/200`}"/>`))       
-      })
-      .catch(error => console.log(error.message))
-  }
-})
-```
-
-[See the code on CodePen](https://codepen.io/daz4126/pen/MWRRgLg)

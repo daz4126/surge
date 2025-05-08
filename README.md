@@ -18,7 +18,7 @@ Write some HTML ...
 <div data-surge>
   <input id="name" type="text" placeholder="Enter your name">
   <button data-action="click -> greet">Greet</button>
-  <h1>Hello <strong value="output">World</strong></h1>
+  <h1>Hello <strong data-reaction="output">World</strong></h1>
 </div>
 ```
 
@@ -109,11 +109,11 @@ Buttons have a default event of 'click', so we can omit the reference to it and 
 </main>
 ```
 
-Next we need to associate the value of the count with the `span` element inside the button. To do this we give it a `data-value` attribute of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its `value` property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
+Next we need to associate the value of the count with the `span` element inside the button. To do this we give it a `data-reaction` attribute of "count". Surge uses this to identify the element. This element will also be reactive and it's text content will update dynamically whenever its property is changed inside a surge action. We assign an initial value of `0` by setting the text content to `0`:
 
 ```html
 <main data-surge>
-  <button data-action="increment">Pressed <span data-value="count">0</span> times</button>
+  <button data-action="increment">Pressed <span data-reaction="count">0</span> times</button>
 </main>
 ```
 
@@ -568,18 +568,18 @@ surge({
 
 #### JavaScript:
 ```javascript
+const listItemTemplate = item => `<li id="item-${item.id}" data-action="complete(${item.id})" data-completed=false class="item">${item.description}<button data-action=delete(${item.id})>delete</button></li>`
+
 const actions = {
-   add: $ => {
-     $("#list").append(`<li data-action="complete" data-completed=false  class="item">${$.item.val}<button data-action=delete>delete</button></li>`)
+  init: $ => $.id = 1,
+  add: $ => {
+     const item = {id: $.id++, description: $("#item").value}
+     $("#list").append(listItemTemplate(item))
      $("#item").value = ""
-     $("#item").focus()
+     $("#item").focus
   },
-    complete: ($,e) => {
-      if(e.target.className === "item"){
-        e.target.dataset.completed = !JSON.parse(e.target.dataset.completed)
-      }  
-    },
-  delete: ($,e) => e.target.parentElement.remove()
+  complete: id => $ =>  $(`#item-${id}`).completed = !$(`#item-${id}`).completed,
+  delete: id => $ => $(`#item-${id}`).remove()
 }
 
 surge(actions)

@@ -69,6 +69,61 @@ Surge was inspired by the brilliant [Stimulus](https://stimulus.hotwired.dev) li
 
 ### ⚡️ Actions & Reactions
 
+At the heart of surge are *actions* and *reactions*.
+
+Add a `data-action` attribute to an element to tell it what action you want to run when a particular event happens. For example this will add a click event to a button that will then call the `increment` action:
+
+```javascript
+<button data-action="click->increment">Count</button>
+```
+
+You actually don't need to specify the event in most cases because Surge will use the default event or elements, so this will also call the `increment` action when the button is clicked because 'click' is the default event for buttons:
+
+```javascript
+<button data-action="count">Count</button>
+```
+
+The default actions for elements are summarised below:
+
+* FORM: "submit"
+* INPUT: "input"
+* TEXTAREA: "input"
+* SELECT: "change"
+* All other elements: "click"
+
+Reactions make elements reactive - their text content instantly updates when the value they are bound to changes.
+
+To bind an element to a value, simple add a `data-reaction` attribute:
+
+```javascript
+  <h1 data-reaction="count">0</h1>
+```
+
+The text content of this h1 element is now boud to the `count` property of the Surge object that gets passed to all actions. The `count` property also gets an initial value of `0` since that is the initial text content.
+
+Last of all, we just need to write the increment function that wires together the action and reaction data-attributes:
+
+```javascript
+const increment = surge => surge.count++
+```
+
+All actions accept the Surge object as their first parameter. A common practice is to use `$` to represent the Surge object (Let us not forget jQuery!):
+
+```javascript
+const increment = $ => $.count++
+```
+
+Any changes to `$.count` inside an action will instantly update the text content of any element that has a `data-reaction="count"` attribute.
+
+This means that pressing the button will make the value inside the h1 increase by 1 on each click.
+
+To get it working, an object of all the actions just needs passing to the Surge function:
+
+```javascript
+const actions = { increment }
+surge(actions)
+```
+
 ### ⚡️ 2-Way Bindings
 
 ### ⚡️ Dynamic Content
